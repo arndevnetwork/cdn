@@ -111,6 +111,18 @@
             }
         }
     </style>
+    <script>
+        async function fetchIP() {
+            try {
+                let response = await fetch('https://api64.ipify.org?format=json');
+                let data = await response.json();
+                document.getElementById('user-ip').textContent = `Your IP: ${data.ip}`;
+            } catch (error) {
+                document.getElementById('user-ip').textContent = 'Your IP: Unable to fetch';
+            }
+        }
+        window.onload = fetchIP;
+    </script>
 </head>
 <body>
     <svg class="vector-graphics" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="#fff" stroke="none">
@@ -123,7 +135,7 @@
     <div class="container">
         <h1>Fast & Secure CDN</h1>
         <p>Accelerate your content delivery with our ultra-fast, highly secure, and globally distributed CDN.</p>
-        <p>Your IP: {{.RemoteIP}}</p>
+        <p id="user-ip">Your IP: Loading...</p>
         <div class="benefits">
             <ul>
                 <li>Lightning-fast content delivery</li>
@@ -136,7 +148,7 @@
         <a href="#" class="btn">Get Started</a>
     </div>
     <div class="footer">
-        &copy; 2025 CDN Service. All Rights Reserved.
+        &copy; 2025 ARN. All Rights Reserved.
     </div>
 </body>
 </html>
