@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
             text-align: center;
+            position: relative;
         }
         .container {
             display: flex;
@@ -20,6 +21,18 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        .vector-graphics {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: auto;
+            opacity: 0.2;
+            z-index: 0;
         }
         h1 {
             font-size: 4rem;
@@ -74,9 +87,25 @@
             transform: scale(1.1);
             box-shadow: 0px 8px 20px rgba(255, 138, 0, 0.6);
         }
+        .footer {
+            background-color: #111;
+            color: #ccc;
+            padding: 20px 0;
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
+    <svg class="vector-graphics" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="#fff" stroke="none">
+        <circle cx="250" cy="250" r="200" fill="none" stroke-width="2" stroke="#e52e71" />
+        <path d="M250,50 A200,200 0 0,1 450,250" stroke="#ff8a00" stroke-width="2" fill="none" />
+        <path d="M250,50 A200,200 0 0,0 50,250" stroke="#ff8a00" stroke-width="2" fill="none" />
+        <path d="M50,250 A200,200 0 0,0 250,450" stroke="#ff8a00" stroke-width="2" fill="none" />
+        <path d="M450,250 A200,200 0 0,0 250,450" stroke="#ff8a00" stroke-width="2" fill="none" />
+    </svg>
     <div class="container">
         <h1>Fast & Secure CDN</h1>
         <p>Accelerate your content delivery with our ultra-fast, highly secure, and globally distributed CDN.</p>
@@ -90,6 +119,9 @@
             </ul>
         </div>
         <a href="#" class="btn">Get Started</a>
+    </div>
+    <div class="footer">
+        &copy; 2025 ARN Network. All Rights Reserved.
     </div>
 </body>
 </html>
