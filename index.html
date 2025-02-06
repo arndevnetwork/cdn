@@ -21,6 +21,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            padding: 20px;
             position: relative;
             z-index: 1;
         }
@@ -29,29 +30,30 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50%;
+            width: 80%;
+            max-width: 900px;
             height: auto;
             opacity: 0.2;
             z-index: 0;
         }
         h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 20px;
             background: linear-gradient(90deg, #ff8a00, #e52e71);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         p {
-            font-size: 1.4rem;
-            max-width: 700px;
+            font-size: 1.2rem;
+            max-width: 90%;
             line-height: 1.6;
             margin-bottom: 30px;
         }
         .benefits {
-            max-width: 800px;
+            max-width: 90%;
             text-align: left;
             margin: 30px auto;
-            font-size: 1.2rem;
+            font-size: 1rem;
             line-height: 1.5;
         }
         .benefits ul {
@@ -72,8 +74,8 @@
         }
         .btn {
             display: inline-block;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 12px 25px;
+            font-size: 1rem;
             color: #fff;
             background: linear-gradient(90deg, #e52e71, #ff8a00);
             border: none;
@@ -90,11 +92,23 @@
         .footer {
             background-color: #111;
             color: #ccc;
-            padding: 20px 0;
+            padding: 15px 0;
             text-align: center;
-            position: absolute;
-            bottom: 0;
+            position: relative;
             width: 100%;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -109,6 +123,7 @@
     <div class="container">
         <h1>Fast & Secure CDN</h1>
         <p>Accelerate your content delivery with our ultra-fast, highly secure, and globally distributed CDN.</p>
+        <p>Your IP: {{.RemoteIP}}</p>
         <div class="benefits">
             <ul>
                 <li>Lightning-fast content delivery</li>
@@ -121,7 +136,7 @@
         <a href="#" class="btn">Get Started</a>
     </div>
     <div class="footer">
-        &copy; 2025 ARN Network. All Rights Reserved.
+        &copy; 2025 CDN Service. All Rights Reserved.
     </div>
 </body>
 </html>
