@@ -187,18 +187,6 @@
             }
         }
     </style>
-    <script>
-        async function fetchIP() {
-            try {
-                let response = await fetch('https://api64.ipify.org?format=json');
-                let data = await response.json();
-                document.getElementById('user-ip').textContent = `Your IP: ${data.ip}`;
-            } catch (error) {
-                document.getElementById('user-ip').textContent = 'Your IP: Unable to fetch';
-            }
-        }
-        window.onload = fetchIP;
-    </script>
 </head>
 <body>
     <svg class="vector-graphics" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="#fff" stroke="none">
@@ -243,9 +231,6 @@
         <a href="#">Privacy Policy</a> | 
         <a href="#">Terms of Service</a> | 
         <a href="#">Contact Us</a>
-        <br>
-		<br>
-        <div id="user-ip">Your IP: Loading...</div>
     </div>
 </body>
 </html>
