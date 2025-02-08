@@ -3,28 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDN Service</title>
+    <title>Fast & Secure CDN Service | ARN</title>
+    <meta name="description" content="Accelerate your content delivery with ARN's ultra-fast, highly secure, and globally distributed CDN.">
     <meta name="robots" content="noindex">
     <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #0d0d0d;
             color: #fff;
             font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
             text-align: center;
             position: relative;
+            overflow-x: hidden;
         }
+
         .container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             padding: 20px;
             position: relative;
             z-index: 1;
         }
+
         .vector-graphics {
             position: absolute;
             top: 50%;
@@ -35,36 +44,48 @@
             height: auto;
             opacity: 0.2;
             z-index: 0;
+            animation: rotate 30s linear infinite;
         }
+
+
+
         h1 {
             font-size: 3rem;
             margin-bottom: 20px;
             background: linear-gradient(90deg, #ff8a00, #e52e71);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: fadeIn 2s ease-in-out;
         }
+
         p {
             font-size: 1.2rem;
             max-width: 90%;
             line-height: 1.6;
             margin-bottom: 30px;
+            animation: fadeIn 2.5s ease-in-out;
         }
+
         .benefits {
             max-width: 90%;
             text-align: left;
             margin: 30px auto;
             font-size: 1rem;
             line-height: 1.5;
+            animation: fadeIn 3s ease-in-out;
         }
+
         .benefits ul {
             list-style: none;
             padding: 0;
         }
+
         .benefits li {
             margin-bottom: 10px;
             padding-left: 20px;
             position: relative;
         }
+
         .benefits li::before {
             content: "✔";
             position: absolute;
@@ -72,6 +93,7 @@
             color: #ff8a00;
             font-weight: bold;
         }
+
         .btn {
             display: inline-block;
             padding: 12px 25px;
@@ -84,20 +106,68 @@
             border-radius: 30px;
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0px 5px 15px rgba(255, 138, 0, 0.4);
+            animation: fadeIn 3.5s ease-in-out;
         }
+
         .btn:hover {
             transform: scale(1.1);
             box-shadow: 0px 8px 20px rgba(255, 138, 0, 0.6);
         }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 50px 0;
+            animation: fadeIn 4s ease-in-out;
+        }
+
+        .stats div {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .stats h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats p {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
         .footer {
             background-color: #111;
             color: #ccc;
-            padding: 15px 0;
+            padding: 30px 0;
             text-align: center;
             position: relative;
             width: 100%;
             font-size: 0.9rem;
         }
+
+        .footer a {
+            color: #ff8a00;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -108,6 +178,12 @@
             .btn {
                 padding: 10px 20px;
                 font-size: 0.9rem;
+            }
+            .stats h2 {
+                font-size: 2rem;
+            }
+            .clients img {
+                width: 80px;
             }
         }
     </style>
@@ -134,7 +210,7 @@
     </svg>
     <div class="container">
         <h1>Fast & Secure CDN</h1>
-        <p>Accelerate your content delivery with our ultra-fast, highly secure, and globally distributed CDN.</p>
+        <p>Accelerate your content delivery with ARN's ultra-fast, highly secure, and globally distributed CDN.</p>
         <div class="benefits">
             <ul>
                 <li>Lightning-fast content delivery</li>
@@ -145,11 +221,31 @@
             </ul>
         </div>
         <a href="#" class="btn">Get Started</a>
+
+        <!-- Statistics Section -->
+        <div class="stats">
+            <div>
+                <h2>200+ </h2>
+                <p>Global Edge Locations</p>
+            </div>
+            <div>
+                <h2>99.99%</h2>
+                <p>Uptime Guarantee</p>
+            </div>
+            <div>
+                <h2>10M+</h2>
+                <p>Requests Served Daily</p>
+            </div>
+        </div>
     </div>
     <div class="footer">
-        &copy; 2025 ARN. All Rights Reserved.         
-		<span id="user-ip">Your IP: Loading...</span>
-
+        &copy; 2025 ARN. All Rights Reserved. | 
+        <a href="#">Privacy Policy</a> | 
+        <a href="#">Terms of Service</a> | 
+        <a href="#">Contact Us</a>
+        <br>
+		<br>
+        <div id="user-ip">Your IP: Loading...</div>
     </div>
 </body>
 </html>
