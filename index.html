@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EdgeCDN - Fast. Secure. Global.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom CSS variables for consistency with Tailwind */
+        :root {
+            --color-primary: #38bdf8; /* sky-400 */
+            --color-primary-dark: #0ea5e9; /* sky-500 */
+            --color-bg-dark: #020617; /* slate-950 */
+            --color-bg-card: #1e293b; /* slate-800 */
+            --color-border: #334155; /* slate-700 */
+            --color-text-light: #f8fafc; /* slate-50 */
+            --color-text-muted: #94a3b8; /* slate-400 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Utility for fade-in animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Specific styles for SVG icons */
+        .feature-icon svg {
+            width: 48px;
+            height: 48px;
+            stroke: url(#gradientPrimary); /* Apply gradient stroke */
+            stroke-width: 2;
+            fill: none;
+            filter: drop-shadow(0 4px 8px rgba(56, 189, 248, 0.2));
+        }
+
+        /* Gradient definition for SVG strokes */
+        .svg-gradient-defs {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Global SVG Gradient Definition -->
+    <svg class="svg-gradient-defs">
+        <defs>
+            <linearGradient id="gradientPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#0ea5e9" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Header -->
+    <header class="bg-slate-900 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-extrabold text-sky-400 tracking-tight">Edge<span class="text-slate-50">CDN</span></a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#features" class="text-slate-300 hover:text-sky-400 transition-colors duration-300 font-medium">Features</a>
+                <a href="#about" class="text-slate-300 hover:text-sky-400 transition-colors duration-300 font-medium">About Us</a>
+                <a href="#" class="text-slate-300 hover:text-sky-400 transition-colors duration-300 font-medium">Pricing</a>
+                <a href="#" class="text-slate-300 hover:text-sky-400 transition-colors duration-300 font-medium">Documentation</a>
+                <a href="#" class="text-slate-300 hover:text-sky-400 transition-colors duration-300 font-medium">Contact</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-slate-300 text-2xl focus:outline-none" aria-label="Toggle mobile menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-slate-950 bg-opacity-95 z-50 hidden flex-col items-center justify-center space-y-8">
+        <button id="close-mobile-menu" class="absolute top-6 right-6 text-slate-300 text-3xl focus:outline-none" aria-label="Close mobile menu">
+            <i class="fas fa-times"></i>
+        </button>
+        <a href="#features" class="text-slate-50 text-3xl font-semibold hover:text-sky-400 transition-colors duration-300">Features</a>
+        <a href="#about" class="text-slate-50 text-3xl font-semibold hover:text-sky-400 transition-colors duration-300">About Us</a>
+        <a href="#" class="text-slate-50 text-3xl font-semibold hover:text-sky-400 transition-colors duration-300">Pricing</a>
+        <a href="#" class="text-slate-50 text-3xl font-semibold hover:text-sky-400 transition-colors duration-300">Documentation</a>
+        <a href="#" class="text-slate-50 text-3xl font-semibold hover:text-sky-400 transition-colors duration-300">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-20 md:py-32 text-center bg-gradient-to-br from-slate-950 to-slate-900">
+        <!-- Background elements (subtle glowing circles) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="w-96 h-96 bg-sky-400 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob"></div>
+            <div class="w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000"></div>
+            <div class="w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000"></div>
+        </div>
+        <style>
+            @keyframes blob {
+                0% { transform: translate(0px, 0px) scale(1); }
+                33% { transform: translate(30px, -50px) scale(1.1); }
+                66% { transform: translate(-20px, 20px) scale(0.9); }
+                100% { transform: translate(0px, 0px) scale(1); }
+            }
+            .animate-blob { animation: blob 7s infinite; }
+            .animation-delay-2000 { animation-delay: 2s; }
+            .animation-delay-4000 { animation-delay: 4s; }
+        </style>
+
+        <div class="container mx-auto px-4 relative z-10 fade-in">
+            <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-sky-300 to-sky-500 drop-shadow-lg">
+                Fast. Secure. Global.
+            </h2>
+            <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-10">
+                Deliver your content faster and safer to users around the world using our low-latency edge infrastructure.
+            </p>
+            <a href="#features" class="inline-block bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-10 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl group">
+                Get Started
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform duration-300"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 md:py-24 bg-slate-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-16 text-slate-50 fade-in">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Feature 1: Uptime -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2L3 6v6c0 5.5 3.5 10.5 9 12 5.5-1.5 9-6.5 9-12V6L12 2z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">99.999% Uptime</h3>
+                    <p class="text-slate-400">Our distributed infrastructure guarantees unparalleled stability and continuous content delivery, ensuring your services are always available, even during massive spikes in traffic or unforeseen events.</p>
+                </div>
+
+                <!-- Feature 2: Edge Security -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 17a2 2 0 100-4 2 2 0 000 4z"></path>
+                            <path d="M18 8h-1V6a5 5 0 00-10 0v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">Edge Security</h3>
+                    <p class="text-slate-400">Integrated DDoS protection and TLS 1.3 everywhere. Your data stays secure — always. Our advanced security measures defend against a wide range of cyber threats at the network's edge.</p>
+                </div>
+
+                <!-- Feature 3: Real-Time Analytics -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M18.7 8.3L14 13l-3-3L3 19"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">Real-Time Analytics</h3>
+                    <p class="text-slate-400">Gain deep insights into your content delivery with our powerful, built-in dashboard. Track requests, performance metrics, and error rates live, allowing for immediate optimization and troubleshooting.</p>
+                </div>
+
+                <!-- Feature 4: Multi-Region POPs -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">Multi-Region POPs</h3>
+                    <p class="text-slate-400">With 30+ strategically located Points of Presence (POPs) across the globe, we ensure ultra-low latency and optimal content delivery for your end-users, no matter their location.</p>
+                </div>
+
+                <!-- Feature 5: Global Load Balancing -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2v20M17 5l-5-5-5 5M17 19l-5 5-5-5"></path>
+                            <path d="M12 12h9M12 12H3"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">Global Load Balancing</h3>
+                    <p class="text-slate-400">Optimize resource utilization and ensure high availability by intelligently distributing incoming traffic across multiple servers and data centers worldwide.</p>
+                </div>
+
+                <!-- Feature 6: Custom SSL/TLS -->
+                <div class="bg-slate-800 rounded-xl p-8 shadow-lg border border-slate-700 hover:border-sky-500 transition-all duration-300 transform hover:-translate-y-2 fade-in">
+                    <div class="feature-icon flex justify-center mb-6">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0110 0v4"></path>
+                            <path d="M12 16v.01"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-slate-50 mb-3">Custom SSL/TLS</h3>
+                    <p class="text-slate-400">Enhance brand trust and security by easily uploading and managing your own custom SSL/TLS certificates, ensuring end-to-end encryption for your domain.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 md:py-24 bg-slate-950">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h2 class="text-4xl font-bold text-center mb-16 text-slate-50 fade-in">About EdgeCDN</h2>
+            <div class="text-center text-lg text-slate-300 mb-12 fade-in">
+                <p class="mb-6">EdgeCDN is a leading content delivery network provider dedicated to optimizing web performance and security. Our mission is to empower businesses and developers to deliver their digital content with unparalleled speed, reliability, and protection, no matter where their users are located.</p>
+                <p>Thanks to an extensive global network of Points of Presence (POPs) and cutting-edge technology, we ensure your users experience lightning-fast load times and seamless access to your applications and media. We believe in a faster, more secure internet for everyone.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center fade-in">
+                <div class="bg-slate-800 rounded-lg p-6 shadow-md border border-slate-700">
+                    <div class="text-5xl font-extrabold text-sky-400 mb-2">30+</div>
+                    <div class="text-slate-400 text-sm">Global POPs</div>
+                </div>
+                <div class="bg-slate-800 rounded-lg p-6 shadow-md border border-slate-700">
+                    <div class="text-5xl font-extrabold text-sky-400 mb-2">10TB+</div>
+                    <div class="text-slate-400 text-sm">Data Transferred Daily</div>
+                </div>
+                <div class="bg-slate-800 rounded-lg p-6 shadow-md border border-slate-700">
+                    <div class="text-5xl font-extrabold text-sky-400 mb-2">99.9%</div>
+                    <div class="text-slate-400 text-sm">Uptime Guarantee</div>
+                </div>
+                <div class="bg-slate-800 rounded-lg p-6 shadow-md border border-slate-700">
+                    <div class="text-5xl font-extrabold text-sky-400 mb-2">50ms</div>
+                    <div class="text-slate-400 text-sm">Avg. Latency</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 py-10 text-center text-slate-400 text-sm border-t border-slate-800 mt-auto">
+        <div class="container mx-auto px-4">
+            <p class="mb-4">&copy; 2025 EdgeCDN. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="hover:text-sky-400 transition-colors duration-300">Privacy Policy</a>
+                <a href="#" class="hover:text-sky-400 transition-colors duration-300">Terms of Service</a>
+                <a href="#" class="hover:text-sky-400 transition-colors duration-300">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" id="back-to-top" class="fixed bottom-8 right-8 bg-sky-500 text-white p-4 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 transform hover:scale-110 hover:bg-sky-600 z-40" aria-label="Back to top">
+        <i class="fas fa-arrow-up text-xl"></i>
+    </a>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+        });
+
+        closeMobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('flex');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+            });
+        });
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Back to top button functionality
+        const backToTopButton = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const faders = document.querySelectorAll('.fade-in');
+
+        const appearOptions = {
+            threshold: 0.2,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(
+            entries,
+            appearOnScroll
+        ) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('appear');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        // Initial check for elements already in view on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            faders.forEach(fader => {
+                const rect = fader.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                    fader.classList.add('appear');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
