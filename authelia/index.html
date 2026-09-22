@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Sign in</title>
+  <style>
+    :root {
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: #111;
+      background: #fff;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: #fff;
+    }
+    .page {
+      width: min(100%, 360px);
+      min-height: 100vh;
+      padding: 112px 0 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .avatar {
+      width: 62px;
+      height: 62px;
+      border: 3px solid #111;
+      border-radius: 50%;
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .avatar::before {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 22px;
+      border-radius: 50%;
+      background: #111;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .avatar::after {
+      content: "";
+      position: absolute;
+      width: 38px;
+      height: 24px;
+      border-radius: 22px 22px 12px 12px;
+      background: #111;
+      bottom: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    h1 {
+      font-weight: 400;
+      font-size: 28px;
+      line-height: 1.25;
+      margin: 0 0 28px;
+    }
+    form { width: 100%; }
+    .field {
+      width: 100%;
+      height: 54px;
+      border: 1px solid #c8c8c8;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      margin-bottom: 16px;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .field:focus-within {
+      border-color: #1976d2;
+      box-shadow: 0 0 0 1px #1976d2;
+    }
+    .field input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-size: 17px;
+      color: #222;
+      font-family: inherit;
+    }
+    .field input::placeholder { color: #777; opacity: 1; }
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 2px 0 20px;
+      font-size: 16px;
+    }
+    .remember input {
+      appearance: none;
+      width: 19px;
+      height: 19px;
+      margin: 0;
+      border: 2px solid #737373;
+      border-radius: 2px;
+      background: #fff;
+      cursor: pointer;
+      position: relative;
+    }
+    .remember input:checked {
+      background: #1976d2;
+      border-color: #1976d2;
+    }
+    .remember input:checked::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    button {
+      width: 100%;
+      height: 44px;
+      border: 0;
+      border-radius: 3px;
+      background: #1976d2;
+      color: #fff;
+      font: 500 14px/1 inherit;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 2px 3px rgba(0,0,0,.20);
+    }
+    button:hover { background: #1565c0; }
+    button:active { transform: translateY(1px); }
+    .or {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 10px;
+      margin: 18px 0;
+      color: #444;
+      font-size: 19px;
+      font-weight: 400;
+    }
+    .or::before, .or::after {
+      content: "";
+      height: 1px;
+      background: #d8d8d8;
+      flex: 1;
+    }
+    .passkey {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+    .passkey-icon {
+      width: 18px;
+      height: 18px;
+      position: relative;
+      display: inline-block;
+    }
+    .passkey-icon::before {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      left: 0;
+      top: 2px;
+    }
+    .passkey-icon::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      left: 7px;
+      top: 8px;
+      box-shadow: 5px 0 0 #fff;
+    }
+    @media (max-width: 600px) {
+      .page { padding-top: 72px; padding-left: 20px; padding-right: 20px; }
+      h1 { font-size: 27px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="avatar" aria-hidden="true"></div>
+    <h1>Sign in</h1>
+
+    <form onsubmit="return false;" autocomplete="on">
+      <label class="field">
+        <input type="text" name="username" placeholder="Username *" autocomplete="username" />
+      </label>
+
+      <label class="field">
+        <input type="password" name="password" placeholder="Password *" autocomplete="current-password" />
+      </label>
+
+      <label class="remember">
+        <input type="checkbox" name="remember" />
+        <span>Remember me</span>
+      </label>
+
+      <button type="submit">Sign in</button>
+
+      <div class="or"><span>OR</span></div>
+
+      <button type="button" class="passkey" onclick="alert('Passkey login is not configured on this static page.')">
+        <span class="passkey-icon" aria-hidden="true"></span>
+        <span>Sign in with a passkey</span>
+      </button>
+    </form>
+
+  </main>
+</body>
+</html>

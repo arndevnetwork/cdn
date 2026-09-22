@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Log in to Nextcloud</title>
+<style>
+:root{--blue:#0082c9;--blue2:#0077b8}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#087fbd,#0082c9 48%,#0a73ad);color:#222}
+.page{width:100%;max-width:470px;display:flex;flex-direction:column;align-items:center}.logo{width:180px;margin-bottom:18px}
+.card{width:390px;max-width:100%;padding:30px 28px 24px;background:#fff;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.2)}
+h1{text-align:center;font-size:22px;font-weight:600;margin:0 0 26px}.field{margin-bottom:18px}label{display:block;margin-bottom:7px;font-size:15px}
+input{width:100%;height:48px;padding:0 14px;border:1px solid #ccc;border-radius:7px;background:#fff;font-size:16px;outline:none}input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,130,201,.18)}
+.login{width:100%;height:48px;border:0;border-radius:24px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}.login:hover{background:var(--blue2)}
+.login svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.links{display:flex;flex-direction:column;align-items:center;gap:17px;margin-top:19px}.links a{color:#222;text-decoration:none;font-size:15px}.links a:hover{text-decoration:underline}
+.footer{margin-top:22px;color:#fff;font-size:14px;text-align:center;text-shadow:0 1px 1px rgba(0,0,0,.12)}
+@media(max-width:440px){.card{padding:26px 20px 22px}.logo{width:165px}}
+</style>
+</head>
+<body>
+<main class="page">
+<svg class="logo" viewBox="0 0 220 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nextcloud">
+      <g fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round">
+        <circle cx="39" cy="45" r="26"></circle>
+        <circle cx="110" cy="45" r="38"></circle>
+        <circle cx="181" cy="45" r="26"></circle>
+      </g>
+    </svg>
+<section class="card">
+<h1>Log in to Nextcloud</h1>
+<form id="loginForm" autocomplete="off">
+<div class="field"><label for="user">Account name or email</label><input id="user" name="user" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+<div class="field"><label for="pass">Password</label><input id="pass" name="pass" type="password" autocomplete="off"></div>
+<button class="login" type="button"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Log in</span></button>
+<div class="links"><a href="#">Forgot password?</a><a href="#">Log in with a device</a></div>
+</form></section>
+<div class="footer">Nextcloud — a safe home for all your data</div>
+</main>
+<script>document.getElementById('loginForm').addEventListener('submit',e=>e.preventDefault());document.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>e.preventDefault()));</script>
+</body></html>
