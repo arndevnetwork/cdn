@@ -3,722 +3,2830 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>451404 — Secure Cloud Sync & Storage</title>
-    <meta name="description" content="451404 — enterprise cloud sync, backup and collaboration platform for teams." />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <title>451404 — Encrypted file sync, sharing and large-file transfer</title>
+    <meta name="description" content="451404 keeps files in sync across devices, versions every change and transfers files up to 20 GB through 42 edge regions — zero-knowledge encryption, EU and US data residency." />
+    <meta name="theme-color" content="#070c18" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="451404" />
+    <meta property="og:title" content="451404 — Encrypted file sync and transfer for teams" />
+    <meta property="og:description" content="Delta sync, zero-knowledge encryption and resumable transfers up to 20 GB across 42 edge regions." />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@451404" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='32' y2='32' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%2338bdf8'/%3E%3Cstop offset='1' stop-color='%238b8cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M10 20.5a4 4 0 0 1 .6-7.96A5.2 5.2 0 0 1 21 13a3.8 3.8 0 0 1 .4 7.5' fill='none' stroke='%23050c16' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 15.6v6.6m0 0 2.5-2.5M16 22.2l-2.5-2.5' fill='none' stroke='%23050c16' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+        // Applies the saved (or system) colour scheme before first paint.
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('451404-theme'); } catch (e) { }
+            var system = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', saved === 'light' || saved === 'dark' ? saved : system);
+        })();
+    </script>
     <style>
+        /* ---------- tokens ---------- */
         :root {
-            --color-primary: #38bdf8;
-            --color-primary-dark: #0ea5e9;
-            --color-accent: #a78bfa;
-            --color-bg-dark: #020617;
-            --color-bg-card: #0f172a;
-            --color-bg-card-2: #111c33;
-            --color-border: #1e293b;
-            --color-text-light: #f8fafc;
-            --color-text-muted: #94a3b8;
+            color-scheme: dark;
+            --brand: #38bdf8;
+            --brand-strong: #0ea5e9;
+            --violet: #8b8cf6;
+            --bg: #070c18;
+            --bg-soft: #0a1120;
+            --surface: #0d1626;
+            --surface-2: #111c30;
+            --surface-3: #17243a;
+            --line: rgba(148, 163, 184, 0.14);
+            --line-strong: rgba(148, 163, 184, 0.26);
+            --fg: #eaf1fb;
+            --fg-muted: #93a3bb;
+            --fg-dim: #6d7d95;
+            --ok: #34d399;
+            --warn: #fbbf24;
+            --danger: #fb7185;
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 18px;
+            --shadow-lg: 0 30px 70px -40px rgba(2, 6, 23, 0.95);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
         }
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-dark);
-            color: var(--color-text-light);
-            margin: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-        html { scroll-behavior: smooth; }
 
-        /* Animated gradient background */
-        .bg-grid {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background:
-                radial-gradient(900px 600px at 15% -10%, rgba(56,189,248,0.18), transparent 60%),
-                radial-gradient(800px 500px at 90% 0%, rgba(167,139,250,0.16), transparent 60%),
-                radial-gradient(700px 500px at 50% 120%, rgba(56,189,248,0.12), transparent 60%),
-                var(--color-bg-dark);
+        [data-theme="light"] {
+            color-scheme: light;
+            --brand: #0284c7;
+            --brand-strong: #0369a1;
+            --violet: #6366f1;
+            --bg: #f4f7fb;
+            --bg-soft: #eef2f9;
+            --surface: #ffffff;
+            --surface-2: #f7f9fd;
+            --surface-3: #eaeff7;
+            --line: rgba(15, 23, 42, 0.10);
+            --line-strong: rgba(15, 23, 42, 0.20);
+            --fg: #0b1220;
+            --fg-muted: #4c5b73;
+            --fg-dim: #6b7a92;
+            --shadow-lg: 0 24px 60px -36px rgba(15, 23, 42, 0.35);
         }
-        .bg-dots {
+        /* ---------- base ---------- */
+        *,
+        *::before,
+        *::after { box-sizing: border-box; }
+
+        [hidden] { display: none !important; }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.6;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        img, svg { max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; color: inherit; }
+        ::selection { background: rgba(56, 189, 248, 0.28); }
+
+        :focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .skip-link {
+            position: fixed;
+            left: 16px;
+            top: -64px;
+            z-index: 120;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: var(--brand);
+            color: #04121f;
+            font-size: 14px;
+            font-weight: 600;
+            transition: top 0.18s ease;
+        }
+
+        .skip-link:focus { top: 14px; }
+
+        /* ---------- page background ---------- */
+        .bg-fx {
             position: fixed;
             inset: 0;
             z-index: -1;
-            background-image:
-                linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px);
-            background-size: 48px 48px;
-            mask-image: radial-gradient(circle at 50% 30%, black 20%, transparent 75%);
+            pointer-events: none;
+            background:
+                radial-gradient(760px 500px at 10% -10%, rgba(56, 189, 248, 0.14), transparent 62%),
+                radial-gradient(640px 420px at 92% 2%, rgba(139, 140, 246, 0.12), transparent 60%),
+                var(--bg);
         }
 
-        .fade-in {
-            opacity: 0;
-            transform: translateY(22px);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-        }
-        .fade-in.appear { opacity: 1; transform: translateY(0); }
-
-        .glass {
-            background: linear-gradient(180deg, rgba(30,41,59,0.72), rgba(15,23,42,0.72));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(148,163,184,0.12);
-        }
-        .glow-btn {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-            transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
-            box-shadow: 0 0 0 rgba(56,189,248,0.4);
-        }
-        .glow-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 34px -6px rgba(56,189,248,0.5);
-            filter: brightness(1.08);
-        }
-        .glow-btn:active { transform: translateY(0); }
-
-        .card-hover {
-            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-6px);
-            border-color: rgba(56,189,248,0.45);
-            background: linear-gradient(180deg, rgba(30,41,59,0.9), rgba(17,28,51,0.9));
-        }
-        .card-hover .icon-wrap {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover .icon-wrap {
-            transform: scale(1.12) rotate(-4deg);
-            box-shadow: 0 0 24px -4px rgba(56,189,248,0.6);
+        [data-theme="light"] .bg-fx {
+            background:
+                radial-gradient(760px 500px at 10% -10%, rgba(2, 132, 199, 0.10), transparent 62%),
+                radial-gradient(640px 420px at 92% 2%, rgba(99, 102, 241, 0.08), transparent 60%),
+                var(--bg);
         }
 
-        .text-grad {
-            background: linear-gradient(90deg, #38bdf8, #a78bfa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        /* ---------- layout ---------- */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin-inline: auto;
+            padding-inline: 24px;
         }
 
-        .stat-num { font-variant-numeric: tabular-nums; }
+        .section { padding-block: 84px; }
+        .section--tight { padding-block: 56px; }
 
-        /* Spinner */
-        .spinner {
-            width: 20px; height: 20px;
-            border: 2.5px solid rgba(255,255,255,0.25);
-            border-top-color: #fff;
+        /* offset for the sticky header when jumping to anchors */
+        html { scroll-padding-top: 80px; }
+
+        @media (max-width: 720px) {
+            .section { padding-block: 60px; }
+            .container { padding-inline: 18px; }
+        }
+
+        .grid { display: grid; gap: 18px; }
+        .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+        @media (max-width: 980px) {
+            .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 680px) {
+            .grid-2,
+            .grid-3 { grid-template-columns: minmax(0, 1fr); }
+        }
+
+        .u-row { display: flex; align-items: center; gap: 10px; }
+        .u-between { justify-content: space-between; }
+        .u-wrap { flex-wrap: wrap; }
+        .u-center { text-align: center; }
+        .u-full { width: 100%; }
+        .u-mt { margin-top: 18px; }
+        .u-mt-s { margin-top: 10px; }
+        .u-mt-lg { margin-top: 34px; }
+
+        /* ---------- header ---------- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            background: rgba(7, 12, 24, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        [data-theme="light"] .site-header { background: rgba(255, 255, 255, 0.82); }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            height: 64px;
+        }
+
+        .brand { display: inline-flex; align-items: center; gap: 9px; }
+        .brand__mark { display: block; width: 30px; height: 30px; flex: none; }
+        .brand__name { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+        .brand__tag {
+            padding: 2px 6px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+        }
+
+        .nav__links { display: flex; align-items: center; gap: 2px; }
+        .nav__link {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--fg-muted);
+            transition: color 0.15s ease, background-color 0.15s ease;
+        }
+        .nav__link:hover { color: var(--fg); background: var(--surface-2); }
+        .nav__actions { display: flex; align-items: center; gap: 8px; }
+
+        .menu { position: relative; }
+        .menu > summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--fg-muted);
+            cursor: pointer;
+            list-style: none;
+        }
+        .menu > summary::-webkit-details-marker { display: none; }
+        .menu > summary:hover { color: var(--fg); background: var(--surface-2); }
+        .menu[open] > summary { color: var(--fg); background: var(--surface-2); }
+        .menu[open] .chev { transform: rotate(180deg); }
+        .chev { transition: transform 0.18s ease; }
+        .menu__panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            display: grid;
+            gap: 2px;
+            width: 316px;
+            padding: 8px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+        }
+        .menu__item { display: flex; gap: 10px; padding: 10px; border-radius: 10px; }
+        .menu__item:hover { background: var(--surface-2); }
+        .menu__item svg { flex: none; margin-top: 3px; color: var(--brand); }
+        .menu__title { font-size: 13.5px; font-weight: 600; }
+        .menu__desc { font-size: 12px; line-height: 1.45; color: var(--fg-dim); }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: transparent;
+            color: var(--fg-muted);
+            cursor: pointer;
+            transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .icon-btn:hover { color: var(--fg); border-color: var(--line-strong); background: var(--surface-2); }
+
+        .menu-btn { display: none; }
+
+        @media (max-width: 940px) {
+            .nav__links { display: none; }
+            .hide-md { display: none !important; }
+            .menu-btn { display: inline-flex; }
+        }
+
+        @media (max-width: 420px) {
+            .nav { gap: 10px; }
+            .nav__actions { gap: 6px; }
+            .brand__tag { display: none; }
+            .brand__name { font-size: 16px; }
+        }
+
+        /* ---------- buttons & badges ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.2;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: transform 0.14s ease, filter 0.14s ease, background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn--primary {
+            background: linear-gradient(180deg, var(--brand), var(--brand-strong));
+            color: #04121f;
+            box-shadow: 0 12px 26px -16px rgba(56, 189, 248, 0.9);
+        }
+        [data-theme="light"] .btn--primary {
+            color: #ffffff;
+            box-shadow: 0 12px 26px -18px rgba(2, 132, 199, 0.9);
+        }
+        .btn--primary:hover { filter: brightness(1.06); }
+        .btn--ghost { border-color: var(--line-strong); color: var(--fg); }
+        .btn--ghost:hover { background: var(--surface-2); }
+        .btn--quiet { color: var(--fg-muted); padding-inline: 10px; }
+        .btn--quiet:hover { color: var(--fg); background: var(--surface-2); }
+        .btn--sm { padding: 7px 12px; font-size: 12.5px; }
+        .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px 5px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface-2);
+            font-size: 12.5px;
+            color: var(--fg-muted);
+        }
+        .pill__sep { color: var(--line-strong); }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            flex: none;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            background: var(--ok);
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18);
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .dot--warn { background: var(--warn); box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2); }
+        .dot--down { background: var(--danger); box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.2); }
 
-        /* Toast */
+        /* ---------- surfaces ---------- */
+        .card {
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+        }
+        .card--lg { padding: 28px; }
+        .card--hover { transition: border-color 0.18s ease, transform 0.18s ease; }
+        .card--hover:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+
+        .icon-tile {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--surface-3);
+            color: var(--brand);
+        }
+
+        .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.55s ease, transform 0.55s ease; }
+        .reveal.is-in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        /* ---------- typography ---------- */
+        h1, h2, h3, h4 { margin: 0; font-weight: 650; line-height: 1.18; letter-spacing: -0.02em; }
+        .h1 { max-width: 20ch; font-size: clamp(32px, 4.2vw, 52px); letter-spacing: -0.03em; }
+        .h2 { max-width: 24ch; font-size: clamp(25px, 3vw, 36px); }
+        .h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+        .lede { max-width: 58ch; margin: 16px 0 0; font-size: clamp(15.5px, 1.35vw, 17.5px); color: var(--fg-muted); }
+        .eyebrow {
+            margin: 0 0 14px;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+        }
+        .muted { color: var(--fg-muted); }
+        .small { font-size: 13px; }
+        .mono { font-family: var(--mono); font-size: 0.95em; font-variant-numeric: tabular-nums; }
+        .link {
+            color: var(--brand);
+            text-decoration: underline;
+            text-decoration-color: rgba(56, 189, 248, 0.35);
+            text-underline-offset: 3px;
+        }
+        .link:hover { text-decoration-color: currentColor; }
+        button.link {
+            background: none;
+            border: 0;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+        }
+        .code-inline {
+            padding: 1px 6px;
+            border-radius: 5px;
+            background: var(--surface-3);
+            font-family: var(--mono);
+            font-size: 0.9em;
+        }
+
+        /* ---------- hero ---------- */
+        .hero { padding-block: 64px 44px; }
+        .hero__grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+            gap: 52px;
+            align-items: center;
+        }
+        .hero__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+        .hero__trust {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 22px 0 0;
+            font-size: 12.5px;
+            color: var(--fg-dim);
+        }
+        .hero__trust span { display: inline-flex; align-items: center; gap: 6px; }
+        .hero__trust svg { flex: none; color: var(--ok); }
+
+        @media (max-width: 1024px) {
+            .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+            .h1 { max-width: 26ch; }
+        }
+
+        /* ---------- app preview ---------- */
+        .mock {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+        }
+        .mock__bar {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--line);
+            border-radius: 16px 16px 0 0;
+            background: var(--surface-2);
+        }
+        .mock__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--line-strong)); }
+        .mock__url {
+            flex: 1;
+            margin-left: 6px;
+            padding: 4px 10px;
+            overflow: hidden;
+            border-radius: 6px;
+            background: var(--surface-3);
+            color: var(--fg-dim);
+            font-size: 11px;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .mock__body { display: grid; grid-template-columns: 164px minmax(0, 1fr); min-height: 336px; }
+        .mock__side {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px;
+            border-right: 1px solid var(--line);
+        }
+        .mock__ws { display: flex; align-items: center; gap: 8px; }
+        .mock__avatar {
+            display: grid;
+            place-items: center;
+            width: 26px;
+            height: 26px;
+            flex: none;
+            border-radius: 8px;
+            background: linear-gradient(150deg, var(--brand), var(--violet));
+            color: #04121f;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .mock__wsname { font-size: 12px; font-weight: 600; }
+        .mock__wsplan { font-size: 10.5px; color: var(--fg-dim); }
+        .mock__nav { display: grid; gap: 1px; }
+        .mock__nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 7px;
+            font-size: 12px;
+            color: var(--fg-muted);
+        }
+        .mock__nav a.is-active { background: var(--surface-3); color: var(--fg); font-weight: 500; }
+        .mock__nav .badge {
+            margin-left: auto;
+            padding: 1px 5px;
+            border-radius: 5px;
+            background: rgba(56, 189, 248, 0.16);
+            color: var(--brand);
+            font-size: 10px;
+            font-style: normal;
+        }
+        .storage { margin-top: auto; }
+        .storage .u-row { justify-content: space-between; font-size: 10.5px; color: var(--fg-dim); }
+        .meter { height: 5px; margin-top: 6px; overflow: hidden; border-radius: 999px; background: var(--surface-3); }
+        .meter > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), var(--violet)); }
+        .mock__main { position: relative; padding: 14px 16px 24px; }
+        .mock__crumb { font-size: 11px; color: var(--fg-dim); }
+        .mock__crumb strong { color: var(--fg-muted); font-weight: 500; }
+        .mock__head { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0 10px; }
+        .mock__title { font-size: 15px; font-weight: 650; }
+        .mock__count { font-size: 10.5px; color: var(--fg-dim); }
+        .mock__files { display: grid; gap: 1px; }
+        .file-row {
+            display: grid;
+            grid-template-columns: 16px minmax(0, 1fr) 58px 42px;
+            gap: 8px;
+            align-items: center;
+            padding: 7px 6px;
+            border-radius: 7px;
+            font-size: 11.5px;
+        }
+        .file-row:nth-child(odd) { background: var(--surface-2); }
+        .file-row svg { color: var(--fg-dim); }
+        .file-row__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-row__size,
+        .file-row__time { color: var(--fg-dim); font-size: 10.5px; text-align: right; }
+        .share-pop {
+            position: absolute;
+            right: -14px;
+            bottom: -18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--line-strong);
+            border-radius: 12px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+        }
+        .share-pop__title { font-size: 11px; font-weight: 600; }
+        .share-pop__link { font-size: 10.5px; color: var(--fg-muted); }
+        .share-pop__meta { margin-top: 2px; font-size: 10px; color: var(--fg-dim); }
+        .qr {
+            display: grid;
+            grid-template-columns: repeat(21, 1fr);
+            width: 58px;
+            height: 58px;
+            flex: none;
+            padding: 3px;
+            border-radius: 5px;
+            background: #ffffff;
+        }
+        .qr span { background: transparent; }
+        .qr span.is-on { background: #0b1220; }
+
+        @media (max-width: 520px) {
+            .mock__body { grid-template-columns: minmax(0, 1fr); }
+            .mock__side { display: none; }
+            .share-pop { position: static; margin-top: 12px; }
+        }
+
+        /* ---------- transfers ---------- */
+        .send__grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+            gap: 44px;
+            align-items: start;
+        }
+        @media (max-width: 980px) { .send__grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+
+        .checks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin: 20px 0 0; padding: 0; list-style: none; }
+        .checks li {
+            position: relative;
+            display: block;
+            padding-left: 25px;
+            min-width: 0;
+            font-size: 14px;
+            color: var(--fg-muted);
+        }
+        .checks li svg { position: absolute; left: 0; top: 3px; color: var(--ok); }
+        .checks--sm li { font-size: 13px; }
+
+        .dropzone {
+            display: block;
+            padding: 26px 18px;
+            border: 1.5px dashed var(--line-strong);
+            border-radius: 14px;
+            background: var(--surface-2);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .dropzone:hover,
+        .dropzone.is-over { border-color: var(--brand); background: rgba(56, 189, 248, 0.06); }
+        .dropzone svg { display: block; margin-inline: auto; color: var(--brand); }
+        .dropzone__title { display: block; margin: 8px 0 2px; font-size: 14px; font-weight: 600; }
+        .dropzone__hint { display: block; font-size: 12px; color: var(--fg-dim); }
+
+        .transfer-list { display: grid; gap: 8px; margin-top: 12px; }
+        .trow {
+            display: grid;
+            grid-template-columns: 16px minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+            padding: 9px 10px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--surface-2);
+        }
+        .trow svg { color: var(--fg-dim); }
+        .trow__name { overflow: hidden; font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+        .trow__bar { height: 4px; margin-top: 6px; overflow: hidden; border-radius: 999px; background: var(--surface-3); }
+        .trow__bar > i {
+            display: block;
+            width: 0;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--brand), var(--violet));
+            transition: width 0.2s linear;
+        }
+        .trow__meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; font-size: 10.5px; color: var(--fg-dim); }
+        .trow__meta .is-done { color: var(--ok); }
+        .trow__x {
+            padding: 4px;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--fg-dim);
+            cursor: pointer;
+        }
+        .trow__x:hover { color: var(--danger); background: var(--surface-3); }
+
+        .send__settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+        @media (max-width: 520px) { .send__settings { grid-template-columns: minmax(0, 1fr); } }
+        .send__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+        .send__note { margin-left: auto; font-size: 12px; }
+
+        .field { display: grid; gap: 6px; }
+        .label { font-size: 12.5px; font-weight: 600; color: var(--fg-muted); }
+        .label__hint { font-weight: 400; color: var(--fg-dim); }
+        .input,
+        .select {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid var(--line-strong);
+            border-radius: 9px;
+            background: var(--surface-2);
+            color: var(--fg);
+            font: inherit;
+            font-size: 13.5px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .select {
+            appearance: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, var(--fg-dim) 50%),
+                linear-gradient(135deg, var(--fg-dim) 50%, transparent 50%);
+            background-position: calc(100% - 16px) 15px, calc(100% - 11px) 15px;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+        }
+        .input::placeholder { color: var(--fg-dim); }
+        .input:focus,
+        .select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18); }
+        .input[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.16); }
+        .err { display: none; margin: 0; font-size: 12px; color: var(--danger); }
+        .err.is-on { display: block; }
+        .input-group { display: flex; gap: 8px; }
+        .input-group .input { flex: 1; }
+        .input-group__btn {
+            padding: 0 12px;
+            border: 1px solid var(--line-strong);
+            border-radius: 9px;
+            background: transparent;
+            color: var(--fg-muted);
+            font-size: 12.5px;
+            cursor: pointer;
+        }
+        .input-group__btn:hover { color: var(--fg); background: var(--surface-3); }
+
+        .result {
+            display: grid;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 14px;
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.06);
+        }
+        .result__head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ok); }
+        .result__row { display: flex; gap: 8px; }
+        .result__row .input { font-family: var(--mono); font-size: 12px; }
+        .result__meta { font-size: 11.5px; color: var(--fg-muted); }
+
+        /* ---------- metrics ---------- */
+        .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+        @media (max-width: 780px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .stat { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+        .stat__num { font-size: clamp(24px, 2.6vw, 32px); font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+        .stat__label { margin-top: 2px; font-size: 12px; color: var(--fg-dim); }
+
+        .uptime-block {
+            margin-top: 22px;
+            padding: 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+        .uptime-block__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+        .uptime { display: flex; align-items: flex-end; gap: 2px; height: 30px; }
+        .uptime i {
+            flex: 1;
+            min-width: 2px;
+            height: 100%;
+            border-radius: 2px;
+            background: var(--ok);
+            opacity: 0.55;
+            transition: opacity 0.15s ease;
+        }
+        .uptime i:hover { opacity: 1; }
+        .uptime i.is-warn { background: var(--warn); }
+        .uptime-block__legend { display: flex; justify-content: space-between; margin-top: 6px; }
+
+        @media (max-width: 720px) {
+            .uptime { gap: 1px; }
+            .uptime i { min-width: 1px; }
+        }
+
+        /* ---------- features ---------- */
+        .feature { display: grid; gap: 10px; align-content: start; }
+        .feature .h3 { margin-top: 2px; }
+        .feature p { margin: 0; font-size: 13.5px; color: var(--fg-muted); }
+        .feature ul { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; margin: 4px 0 0; padding: 0; list-style: none; }
+        .feature li { display: flex; gap: 7px; font-size: 12.5px; color: var(--fg-dim); }
+        .feature li::before {
+            content: "";
+            width: 4px;
+            height: 4px;
+            flex: none;
+            margin-top: 7px;
+            border-radius: 50%;
+            background: var(--line-strong);
+        }
+
+        /* ---------- api ---------- */
+        .api__grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+            gap: 44px;
+            align-items: start;
+        }
+        @media (max-width: 980px) { .api__grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+        .chip {
+            padding: 4px 9px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--surface-2);
+            font-size: 11.5px;
+            color: var(--fg-dim);
+        }
+        .code-card { padding: 0; overflow: hidden; }
+        .code__bar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+        }
+        .code__tab { font-size: 12px; color: var(--fg-dim); }
+        .code__tab.is-on { color: var(--fg); font-weight: 600; }
+        .code__copy { margin-left: auto; }
+        .code {
+            margin: 0;
+            padding: 14px 16px;
+            overflow-x: auto;
+            background: #060b16;
+            color: #c9d7ea;
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.75;
+        }
+        .tok-key { color: #7dd3fc; }
+        .tok-str { color: #a7f3d0; }
+        .tok-com { color: #64748b; }
+        .tok-flag { color: #c4b5fd; }
+
+        /* ---------- security & status ---------- */
+        .security__grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+            gap: 44px;
+            align-items: start;
+        }
+        @media (max-width: 980px) { .security__grid { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+        .status__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+        .status__head p { margin: 2px 0 0; }
+        .status__list { display: grid; gap: 1px; margin: 16px 0 0; padding: 0; list-style: none; }
+        .status__list li {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto 8px;
+            gap: 12px;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+        .status__list li:last-child { border-bottom: 0; }
+        .status__list .mono { font-size: 11.5px; color: var(--fg-dim); }
+
+        /* ---------- customers ---------- */
+        .logo-strip__label { text-align: center; }
+        .logo-strip {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 20px 40px;
+            margin-top: 18px;
+        }
+        .logo-strip span {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+            opacity: 0.75;
+        }
+        .quote { display: grid; gap: 14px; align-content: start; margin: 0; }
+        .quote blockquote { margin: 0; font-size: 14px; line-height: 1.65; }
+        .quote figcaption { display: flex; align-items: center; gap: 10px; }
+        .avatar {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            flex: none;
+            border-radius: 50%;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+        .quote__name { font-size: 12.5px; font-weight: 600; }
+
+        /* ---------- pricing ---------- */
+        .pricing__head { display: grid; justify-items: center; text-align: center; }
+        .pricing__head .lede { margin-inline: auto; text-align: center; }
+        .pricing__controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+        .segmented {
+            display: inline-flex;
+            gap: 2px;
+            padding: 3px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--surface-2);
+        }
+        .segmented button {
+            padding: 7px 13px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--fg-muted);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .segmented button.is-on { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(2, 6, 23, 0.25); }
+        [data-theme="light"] .segmented button.is-on { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12); }
+        .save { color: var(--ok); font-weight: 600; }
+
+        .pricing__grid { margin-top: 32px; align-items: start; }
+        .plan { display: grid; gap: 12px; align-content: start; }
+        .plan--featured { border-color: rgba(56, 189, 248, 0.45); box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.16), var(--shadow-lg); }
+        .plan__flag {
+            justify-self: start;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--brand);
+        }
+        .plan .price { margin: 2px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; }
+        .plan .price small { font-size: 12.5px; font-weight: 500; letter-spacing: 0; color: var(--fg-dim); }
+        .plan__note { font-size: 12px; color: var(--fg-dim); }
+        .plan__cta { width: 100%; margin-top: 6px; }
+
+        .cmp-wrap { overflow-x: auto; }
+        .cmp { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .cmp th,
+        .cmp td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+        .cmp thead th { font-size: 12px; font-weight: 600; color: var(--fg-dim); }
+        .cmp td:not(:first-child),
+        .cmp th:not(:first-child) { text-align: center; }
+        .cmp tr:last-child td { border-bottom: 0; }
+
+        /* ---------- faq / legal ---------- */
+        .faq { display: grid; gap: 8px; }
+        .qa { padding: 0 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
+        .qa > summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 0;
+            font-size: 14.5px;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+        }
+        .qa > summary::-webkit-details-marker { display: none; }
+        .qa > summary::after { content: "+"; font-size: 16px; font-weight: 400; color: var(--fg-dim); }
+        .qa[open] > summary::after { content: "\2212"; }
+        .qa p { max-width: 70ch; margin: 0 0 15px; font-size: 13.5px; color: var(--fg-muted); }
+
+        /* ---------- cta ---------- */
+        .cta {
+            padding: 44px 28px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.07), transparent 60%), var(--surface);
+            text-align: center;
+        }
+        .cta .h2 { margin-inline: auto; }
+        .cta .lede { max-width: 44rem; margin-inline: auto; text-align: center; }
+        .cta__form { display: flex; gap: 10px; max-width: 440px; margin: 22px auto 0; }
+        @media (max-width: 520px) { .cta__form { flex-direction: column; } }
+        .cta__form .input { flex: 1; padding: 11px 13px; font-size: 14px; }
+        .consent { display: inline-flex; align-items: flex-start; gap: 8px; margin-top: 14px; font-size: 12px; text-align: left; }
+        .consent input { margin-top: 2px; accent-color: var(--brand); }
+        .success { margin: 14px 0 0; font-size: 13px; color: var(--ok); }
+
+        /* ---------- footer ---------- */
+        .site-footer { padding-block: 52px 26px; border-top: 1px solid var(--line); background: var(--bg-soft); }
+        .footer-grid { display: grid; grid-template-columns: 1.6fr repeat(4, minmax(0, 1fr)); gap: 28px; }
+        @media (max-width: 900px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .footer-col h4 {
+            margin: 0 0 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--fg-dim);
+        }
+        .footer-col a { display: block; padding: 4px 0; font-size: 13px; color: var(--fg-muted); }
+        .footer-col a:hover { color: var(--fg); }
+        .footer-col a.brand { display: inline-flex; padding: 0; color: var(--fg); }
+        .footer-col a.pill { display: inline-flex; padding: 5px 12px 5px 10px; font-size: 12.5px; }
+        .footer-entity { margin-top: 12px; font-size: 12px; line-height: 1.7; color: var(--fg-dim); }
+        .footer-bottom {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 34px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            color: var(--fg-dim);
+        }
+        .footer-social { display: flex; gap: 8px; }
+
+        /* ---------- modal / toast / consent ---------- */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(3, 7, 15, 0.7);
+            backdrop-filter: blur(4px);
+        }
+        .modal.is-open { display: flex; }
+        .modal__card {
+            position: relative;
+            width: 100%;
+            max-width: 396px;
+            padding: 24px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+        }
+        .modal__close { position: absolute; top: 12px; right: 12px; }
+        .modal__head { display: grid; justify-items: center; gap: 6px; margin-bottom: 18px; text-align: center; }
+        .modal__head .brand__mark { width: 36px; height: 36px; }
+        .modal__head p { max-width: 32ch; margin: 0; }
+        .or { display: flex; align-items: center; gap: 10px; margin: 16px 0; font-size: 11.5px; color: var(--fg-dim); }
+        .or::before,
+        .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+        .sso { display: grid; gap: 8px; }
+        .modal__foot { margin: 16px 0 0; font-size: 11.5px; color: var(--fg-dim); text-align: center; }
+
+        .auth-done { display: grid; gap: 8px; justify-items: center; padding: 8px 0 4px; text-align: center; }
+        .auth-done svg { color: var(--ok); }
+        .auth-done p { max-width: 32ch; margin: 0; }
+        .auth-done .btn { margin-top: 8px; }
+
         .toast {
-            transform: translateY(20px);
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            z-index: 95;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: calc(100vw - 32px);
+            padding: 11px 15px;
+            border: 1px solid var(--line-strong);
+            border-radius: 11px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+            font-size: 13px;
             opacity: 0;
-            transition: all 0.4s ease;
+            transform: translate(-50%, 14px);
+            pointer-events: none;
+            transition: opacity 0.22s ease, transform 0.22s ease;
         }
-        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+        .toast svg { flex: none; color: var(--ok); }
 
-        /* Toggle */
-        .toggle-dot { transition: left 0.2s ease; }
-
-        .nav-link { position: relative; }
-        .nav-link::after {
-            content: '';
-            position: absolute; left: 0; bottom: -4px;
-            width: 0; height: 2px;
-            background: linear-gradient(90deg, #38bdf8, #a78bfa);
-            transition: width 0.25s ease;
+        .cookies {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            z-index: 85;
+            display: none;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            max-width: 860px;
+            margin-inline: auto;
+            padding: 16px 18px;
+            border: 1px solid var(--line-strong);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+            font-size: 12.5px;
         }
-        .nav-link:hover::after { width: 100%; }
+        .cookies.is-open { display: flex; }
+        .cookies p { max-width: 52ch; margin: 0; color: var(--fg-muted); }
+        .cookies__actions { display: flex; gap: 8px; }
 
-        input:focus, select:focus { outline: none; }
+        /* ---------- mobile panel ---------- */
+        .mobile-panel { position: fixed; inset: 0; z-index: 100; display: none; }
+        .mobile-panel.is-open { display: block; }
+        .mobile-panel__backdrop { position: absolute; inset: 0; border: 0; background: rgba(3, 7, 15, 0.6); }
+        .mobile-panel__sheet {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: min(320px, 86vw);
+            padding: 16px;
+            overflow-y: auto;
+            border-left: 1px solid var(--line);
+            background: var(--surface);
+        }
+        .mobile-panel__close { align-self: flex-end; }
+        .m-panel-link { padding: 11px 8px; border-radius: 9px; font-size: 15px; font-weight: 500; color: var(--fg-muted); }
+        .m-panel-link:hover { background: var(--surface-2); color: var(--fg); }
+        button.m-panel-link {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+        .mobile-panel__sep { height: 1px; margin: 10px 0; background: var(--line); }
     </style>
+    <noscript>
+        <style>
+            .reveal { opacity: 1; transform: none; }
+        </style>
+    </noscript>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                    "@type": "Organization",
+                    "name": "451404",
+                    "legalName": "451404 GmbH",
+                    "foundingDate": "2019-04-02",
+                    "address": {
+                        "@type": "PostalAddress",
+                        "streetAddress": "Chausseestraße 74",
+                        "postalCode": "10115",
+                        "addressLocality": "Berlin",
+                        "addressCountry": "DE"
+                    }
+                },
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "451404",
+                    "applicationCategory": "BusinessApplication",
+                    "operatingSystem": "Web, macOS, Windows, Linux, iOS, Android",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD",
+                        "description": "Starter plan for up to 3 users"
+                    }
+                },
+                {
+                    "@type": "FAQPage",
+                    "mainEntity": [
+                        {
+                            "@type": "Question",
+                            "name": "Do recipients need an account to download a file?",
+                            "acceptedAnswer": { "@type": "Answer", "text": "No. A share link opens the file in any modern browser. Accounts only matter on the sending side, where permissions and audit logs live." }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "What happens when an upload is interrupted?",
+                            "acceptedAnswer": { "@type": "Answer", "text": "Transfers resume from the last acknowledged chunk, so a dropped connection costs you seconds rather than the whole file. The same applies to 20 GB uploads over mobile networks." }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Can 451404 read my files?",
+                            "acceptedAnswer": { "@type": "Answer", "text": "No. Files are encrypted on your device with AES-256-GCM before they leave it, and keys are derived locally with Argon2id. The service stores ciphertext, checksums and a manifest." }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Where is my data stored?",
+                            "acceptedAnswer": { "@type": "Answer", "text": "Each workspace is pinned to Frankfurt (EU) or Ashburn (US) at creation time. Replication stays inside that region, and the setting cannot be changed silently by support." }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "Can I cancel in the middle of a billing period?",
+                            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cancelling stops the next renewal and unused full months are credited back to the original payment method within 5 business days." }
+                        }
+                    ]
+                }
+            ]
+        }
+    </script>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="bg-dots"></div>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <noscript>
+        <p style="margin:0;padding:12px 18px;background:#111c30;color:#eaf1fb;border-bottom:1px solid rgba(148,163,184,.2);font:14px/1.5 system-ui,sans-serif;text-align:center;">
+            JavaScript is disabled — the transfer widget and theme switcher are unavailable, everything else works.
+        </p>
+    </noscript>
+    <div class="bg-fx" aria-hidden="true"></div>
 
-    <!-- NAV -->
-    <header class="sticky top-0 z-40 backdrop-blur-md" style="background:rgba(2,6,23,0.6);border-bottom:1px solid rgba(148,163,184,0.1);">
-        <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="#" class="flex items-center gap-2.5 font-bold text-lg">
-                <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">
-                    <i class="fas cloud text-white"></i>
-                    <i class="fas fa-cloud text-white"></i>
-                </span>
-                <span>451404</span>
-            </a>
-            <div class="hidden md:flex items-center gap-8 text-sm" style="color:var(--color-text-muted);">
-                <a href="#features" class="nav-link hover:text-white transition-colors">Features</a>
-                <a href="#security" class="nav-link hover:text-white transition-colors">Security</a>
-                <a href="#pricing" class="nav-link hover:text-white transition-colors">Pricing</a>
-                <a href="#enterprise" class="nav-link hover:text-white transition-colors">Enterprise</a>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="themeToggle" class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border transition-colors" style="border-color:var(--color-border);color:var(--color-text-muted);">
-                    <i class="fas moon"></i>
-                    <i class="fas fa-moon"></i>
-                    <span class="moon-label">Dark</span>
-                </button>
-                <button id="loginBtn" class="text-sm font-medium hover:text-white transition-colors" style="color:var(--color-text-muted);">Log in</button>
-                <button id="ctaNav" class="glow-btn text-sm font-semibold px-4 py-2 rounded-lg text-white">Start free</button>
-            </div>
-        </nav>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="brandGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38bdf8" />
+                <stop offset="1" stop-color="#8b8cf6" />
+            </linearGradient>
+        </defs>
+        <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
+        <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+        <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.8A8.6 8.6 0 0 1 9.2 3.5a8.6 8.6 0 1 0 11.3 11.3z"/></symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5l6 6 6-6"/></symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 5.5A2.5 2.5 0 0 0 12.5 3H6.5A2.5 2.5 0 0 0 4 5.5v6A2.5 2.5 0 0 0 6.5 14"/></symbol>
+        <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7.5 8.5L12 4l4.5 4.5"/><path d="M4 15.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5"/></symbol>
+        <symbol id="i-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 .7-8.95A6 6 0 0 0 6.4 9.3 4 4 0 0 0 6.8 19z"/></symbol>
+        <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.8v5.4c0 4.4-2.9 7.9-7 9.4-4.1-1.5-7-5-7-9.4V5.8z"/><path d="M9 12.2l2.1 2.1 4-4"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></symbol>
+        <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2"/><path d="M12 3.4c2.2 2.4 3.4 5.4 3.4 8.6s-1.2 6.2-3.4 8.6c-2.2-2.4-3.4-5.4-3.4-8.6s1.2-6.2 3.4-8.6z"/></symbol>
+        <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8l-4 4 4 4"/><path d="M15 8l4 4-4 4"/></symbol>
+        <symbol id="i-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="6" rx="2"/><rect x="3.5" y="13.5" width="17" height="6" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></symbol>
+        <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.3"/><path d="M3.5 20c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2"/><path d="M16 5.6a3.2 3.2 0 0 1 0 6.2"/><path d="M17.6 14.4c1.9.6 3.4 2.4 3.4 4.6"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></symbol>
+        <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.5" r="3.5"/><path d="M10.6 13L20 3.6"/><path d="M17 6.6l2.4 2.4"/><path d="M14.6 9l2.4 2.4"/></symbol>
+        <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.4 1.4"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 0 0 5.7 5.7l1.4-1.4"/></symbol>
+        <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5L5 13.5h5l-1 8 8-11h-5z"/></symbol>
+        <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5z"/><path d="M13.5 3.5v5h5"/></symbol>
+    </svg>
+
+    <header class="site-header">
+        <div class="container">
+            <nav class="nav" aria-label="Main">
+                <a class="brand" href="#top" aria-label="451404 — home">
+                    <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+                        <rect width="32" height="32" rx="9" fill="url(#brandGrad)" />
+                        <path d="M10 20.5a4 4 0 0 1 .6-7.96A5.2 5.2 0 0 1 21 13a3.8 3.8 0 0 1 .4 7.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M16 15.6v6.6m0 0 2.5-2.5M16 22.2l-2.5-2.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span class="brand__name">451404</span>
+                    <span class="brand__tag">Cloud</span>
+                </a>
+
+                <div class="nav__links">
+                    <details class="menu">
+                        <summary>Product <svg class="chev" width="13" height="13" aria-hidden="true"><use href="#i-chevron" /></svg></summary>
+                        <div class="menu__panel">
+                            <a class="menu__item" href="#features">
+                                <svg width="16" height="16" aria-hidden="true"><use href="#i-cloud" /></svg>
+                                <span>
+                                    <span class="menu__title">Sync engine</span>
+                                    <span class="menu__desc">Delta sync across laptops, phones and servers</span>
+                                </span>
+                            </a>
+                            <a class="menu__item" href="#send">
+                                <svg width="16" height="16" aria-hidden="true"><use href="#i-upload" /></svg>
+                                <span>
+                                    <span class="menu__title">Transfers</span>
+                                    <span class="menu__desc">Resumable uploads up to 20 GB with expiring links</span>
+                                </span>
+                            </a>
+                            <a class="menu__item" href="#security">
+                                <svg width="16" height="16" aria-hidden="true"><use href="#i-shield" /></svg>
+                                <span>
+                                    <span class="menu__title">Security</span>
+                                    <span class="menu__desc">Zero-knowledge encryption and audit logs</span>
+                                </span>
+                            </a>
+                            <a class="menu__item" href="#network">
+                                <svg width="16" height="16" aria-hidden="true"><use href="#i-globe" /></svg>
+                                <span>
+                                    <span class="menu__title">Edge network</span>
+                                    <span class="menu__desc">42 regions, EU or US residency</span>
+                                </span>
+                            </a>
+                        </div>
+                    </details>
+                    <a class="nav__link" href="#api">Docs</a>
+                    <a class="nav__link" href="#pricing">Pricing</a>
+                    <a class="nav__link" href="#status">Status</a>
+                </div>
+
+                <div class="nav__actions">
+                    <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to light theme" aria-pressed="false">
+                        <svg id="themeIcon" width="17" height="17" aria-hidden="true"><use href="#i-sun" /></svg>
+                    </button>
+                    <a class="btn btn--quiet hide-md" href="#pricing">Contact sales</a>
+                    <button class="btn btn--ghost hide-md" type="button" data-auth="signin">Sign in</button>
+                    <button class="btn btn--primary" type="button" data-auth="signup">Start free</button>
+                    <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobilePanel">
+                        <svg width="18" height="18" aria-hidden="true"><use href="#i-menu" /></svg>
+                    </button>
+                </div>
+            </nav>
+        </div>
     </header>
 
-    <!-- HERO -->
-    <section class="max-w-7xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div class="fade-in inline-flex items-center gap-2 px-4 py-1.5 rounded-full border mb-8 text-xs" style="border-color:var(--color-border);color:var(--color-text-muted);">
-            <span class="w-2 h-2 rounded-full animate-pulse" style="background:#34d399;"></span>
-            All systems operational · v4.2 now available
-        </div>
-        <h1 class="fade-in text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight max-w-4xl mx-auto">
-            Secure cloud sync for the files that <span class="text-grad">power your team</span>
-        </h1>
-        <p class="fade-in mt-6 text-lg max-w-2xl mx-auto" style="color:var(--color-text-muted);">
-            End-to-end encrypted synchronization, automatic backups, and real-time collaboration — engineered for organizations that move terabytes without breaking a sweat.
-        </p>
-        <div class="fade-in mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button id="ctaHero" class="glow-btn w-full sm:w-auto font-semibold px-7 py-3.5 rounded-xl text-white flex items-center justify-center gap-2">
-                <i class="fas fa-rocket"></i> Start free trial
+    <div class="mobile-panel" id="mobilePanel" role="dialog" aria-modal="true" aria-label="Site menu" hidden>
+        <button class="mobile-panel__backdrop" type="button" data-panel-close aria-label="Close menu"></button>
+        <div class="mobile-panel__sheet">
+            <button class="icon-btn mobile-panel__close" type="button" data-panel-close aria-label="Close menu">
+                <svg width="18" height="18" aria-hidden="true"><use href="#i-x" /></svg>
             </button>
-            <button id="ctaDemo" class="w-full sm:w-auto font-semibold px-7 py-3.5 rounded-xl border flex items-center justify-center gap-2 transition-colors hover:bg-white/5" style="border-color:var(--color-border);">
-                <i class="fas fa-play-circle"></i> Watch demo
-            </button>
+            <a class="m-panel-link" href="#features">Product</a>
+            <a class="m-panel-link" href="#send">Transfers</a>
+            <a class="m-panel-link" href="#api">Docs</a>
+            <a class="m-panel-link" href="#pricing">Pricing</a>
+            <a class="m-panel-link" href="#status">Status</a>
+            <div class="mobile-panel__sep"></div>
+            <a class="m-panel-link" href="#pricing">Contact sales</a>
+            <a class="m-panel-link" href="#send">Send a file</a>
+            <button class="m-panel-link" type="button" data-auth="signin">Sign in</button>
+            <div class="mobile-panel__sep"></div>
+            <button class="btn btn--primary" type="button" data-auth="signup">Start free trial</button>
         </div>
-        <p class="fade-in mt-5 text-xs" style="color:var(--color-text-muted);">
-            <i class="fas fa-shield-alt"></i> No credit card required · 14-day trial · SOC 2 Type II
-        </p>
-    </section>
+    </div>
 
-    <!-- QUICK UPLOAD (fake demo) -->
-    <section id="upload" class="max-w-5xl mx-auto px-6 py-10">
-        <div class="glass rounded-3xl p-8 md:p-10 fade-in relative overflow-hidden">
-            <div class="absolute inset-0 opacity-30" style="background:radial-gradient(480px 180px at 80% -30%, rgba(167,139,250,0.35), transparent 70%);"></div>
-            <div class="relative">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);"><i class="fas fa-cloud-upload text-white"></i></span>
-                        <div>
-                            <h3 class="font-semibold text-lg">Quick Upload</h3>
-                            <p class="text-xs" style="color:var(--color-text-muted);">Drop up to 20 GB · end-to-end encrypted</p>
+    <main id="main">
+
+    <!-- HERO -->
+    <section class="hero" id="top">
+        <div class="container">
+            <div class="hero__grid">
+                <div>
+                    <a class="pill reveal" href="#status">
+                        <span class="dot" aria-hidden="true"></span>
+                        All systems operational
+                        <span class="pill__sep" aria-hidden="true">·</span>
+                        v4.2.1
+                    </a>
+                    <h1 class="h1 reveal u-mt">Encrypted file sync and large-file transfer for teams</h1>
+                    <p class="lede reveal">
+                        451404 keeps every device in sync, versions every change and moves files up to 20 GB through 42 edge regions — without ever holding the keys to your data.
+                    </p>
+                    <div class="hero__actions reveal">
+                        <button class="btn btn--primary" type="button" data-auth="signup">Start free trial</button>
+                        <a class="btn btn--ghost" href="#send">
+                            Send a file
+                            <svg width="14" height="14" aria-hidden="true"><use href="#i-arrow" /></svg>
+                        </a>
+                    </div>
+                    <p class="hero__trust reveal">
+                        <span><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> No credit card · 14-day trial</span>
+                        <span><svg width="14" height="14" aria-hidden="true"><use href="#i-shield" /></svg> SOC 2 Type II · ISO 27001</span>
+                        <span><svg width="14" height="14" aria-hidden="true"><use href="#i-globe" /></svg> EU &amp; US residency</span>
+                    </p>
+                </div>
+
+                <div class="mock reveal" role="img" aria-label="451404 web app: the Engineering folder with five files, a share dialog and 412 GB of 5 TB used">
+                    <div class="mock__bar">
+                        <span class="mock__dot" style="--c:#fb7185"></span>
+                        <span class="mock__dot" style="--c:#fbbf24"></span>
+                        <span class="mock__dot" style="--c:#34d399"></span>
+                        <span class="mock__url mono">/files/engineering</span>
+                    </div>
+                    <div class="mock__body">
+                        <aside class="mock__side">
+                            <div class="mock__ws">
+                                <span class="mock__avatar" aria-hidden="true">N</span>
+                                <div>
+                                    <div class="mock__wsname">Northwind Labs</div>
+                                    <div class="mock__wsplan">Business · 42 seats</div>
+                                </div>
+                            </div>
+                            <nav class="mock__nav" aria-hidden="true">
+                                <a class="is-active"><svg width="13" height="13"><use href="#i-file" /></svg> Files</a>
+                                <a><svg width="13" height="13"><use href="#i-users" /></svg> Shared</a>
+                                <a><svg width="13" height="13"><use href="#i-upload" /></svg> Transfers <em class="badge">3</em></a>
+                                <a><svg width="13" height="13"><use href="#i-db" /></svg> Trash</a>
+                            </nav>
+                            <div class="storage">
+                                <div class="u-row"><span>Storage</span><span class="mono">412 GB / 5 TB</span></div>
+                                <div class="meter"><i style="width:8%"></i></div>
+                            </div>
+                        </aside>
+                        <div class="mock__main">
+                            <div class="mock__crumb">Home / <strong>Engineering</strong></div>
+                            <div class="mock__head">
+                                <span class="mock__title">Engineering</span>
+                                <span class="mock__count">12 items · 6 members</span>
+                            </div>
+                            <div class="mock__files">
+                                <div class="file-row">
+                                    <svg width="13" height="13" aria-hidden="true"><use href="#i-file" /></svg>
+                                    <span class="file-row__name">q3-architecture.pdf</span>
+                                    <span class="file-row__size mono">4.2 MB</span>
+                                    <span class="file-row__time">2 min</span>
+                                </div>
+                                <div class="file-row">
+                                    <svg width="13" height="13" aria-hidden="true"><use href="#i-file" /></svg>
+                                    <span class="file-row__name">release-2026.10.tar.zst</span>
+                                    <span class="file-row__size mono">1.8 GB</span>
+                                    <span class="file-row__time">1 h</span>
+                                </div>
+                                <div class="file-row">
+                                    <svg width="13" height="13" aria-hidden="true"><use href="#i-file" /></svg>
+                                    <span class="file-row__name">onboarding-walkthrough.mp4</span>
+                                    <span class="file-row__size mono">640 MB</span>
+                                    <span class="file-row__time">yesterday</span>
+                                </div>
+                                <div class="file-row">
+                                    <svg width="13" height="13" aria-hidden="true"><use href="#i-file" /></svg>
+                                    <span class="file-row__name">storage-forecast.xlsx</span>
+                                    <span class="file-row__size mono">96 KB</span>
+                                    <span class="file-row__time">2 d</span>
+                                </div>
+                                <div class="file-row">
+                                    <svg width="13" height="13" aria-hidden="true"><use href="#i-file" /></svg>
+                                    <span class="file-row__name">keys-backup.enc</span>
+                                    <span class="file-row__size mono">512 KB</span>
+                                    <span class="file-row__time">3 d</span>
+                                </div>
+                            </div>
+
+                            <div class="share-pop">
+                                <div class="qr" id="qrHero" aria-hidden="true"></div>
+                                <div>
+                                    <div class="share-pop__title">Share link</div>
+                                    <div class="share-pop__link mono">/s/k7m2pd</div>
+                                    <div class="share-pop__meta">Password · expires in 7 days</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:rgba(56,189,248,0.12);color:#38bdf8;"><i class="fas fa-circle" style="font-size:6px;"></i> Live</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRANSFERS -->
+    <section class="section" id="send">
+        <div class="container">
+            <div class="send__grid">
+                <div>
+                    <p class="eyebrow">Transfers</p>
+                    <h2 class="h2">Send a file that actually arrives</h2>
+                    <p class="lede">
+                        Drop a file, choose how long the link lives, share it. Recipients open it in a browser — no account, no client install, and no upload that dies at 94%.
+                    </p>
+                    <ul class="checks">
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Up to 20 GB per file, resumed from the last acknowledged chunk</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Password, expiry date and download limit on every link</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Delivery receipt when the recipient actually downloads</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> SHA-256 checksum shown before and after the transfer</li>
+                    </ul>
+                    <p class="small muted u-mt">
+                        Need a permanent place for these files? <a class="link" href="#start">Create a workspace</a> or use <a class="link" href="#api">the API</a>.
+                    </p>
                 </div>
 
-                <div id="dropZone" class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors" style="border-color:var(--color-border);">
-                    <i class="fas fa-cloud-upload-alt text-3xl mb-3" style="color:var(--color-primary);"></i>
-                    <p class="text-sm font-medium">Drag &amp; drop files here</p>
-                    <p class="text-xs mt-1" style="color:var(--color-text-muted);">or <span class="underline cursor-pointer">browse</span> from your computer</p>
+                <div class="card card--lg">
+                    <div class="u-row u-between">
+                        <h3 class="h3">New transfer</h3>
+                        <span class="pill small">20 GB / file</span>
+                    </div>
+
+                    <label class="dropzone u-mt" id="dropZone" for="fileInput">
+                        <svg width="24" height="24" aria-hidden="true"><use href="#i-upload" /></svg>
+                        <span class="dropzone__title">Drop files here or browse</span>
+                        <span class="dropzone__hint">PDF, ZIP, images, video — encrypted in the browser before upload</span>
+                    </label>
                     <input id="fileInput" type="file" multiple hidden />
-                </div>
 
-                <div id="fileList" class="mt-5 space-y-3"></div>
+                    <div class="transfer-list" id="fileList"></div>
 
-                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <p class="text-xs" style="color:var(--color-text-muted);"><i class="fas fa-lock"></i> Files are encrypted before upload</p>
-                    <div class="flex gap-3 items-center">
-                        <button id="demoUpload" class="text-sm font-semibold px-4 py-2 rounded-lg border transition-colors hover:bg-white/5" style="border-color:var(--color-border);color:var(--color-text-muted);">Try demo upload</button>
-                        <button id="startUpload" class="glow-btn px-6 py-2.5 rounded-lg font-semibold text-white flex items-center gap-2">
-                            <i class="fas fa-upload"></i> Upload
+                    <div class="send__settings">
+                        <div class="field">
+                            <label class="label" for="expiry">Link expires</label>
+                            <select class="select" id="expiry">
+                                <option value="7">In 7 days</option>
+                                <option value="14">In 14 days</option>
+                                <option value="30" selected>In 30 days</option>
+                                <option value="1">In 24 hours</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="transferPassword">Password <span class="label__hint">optional</span></label>
+                            <input class="input" id="transferPassword" type="text" placeholder="Required to download" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="field u-mt">
+                        <label class="label" for="notifyEmail">Notify by e-mail <span class="label__hint">optional</span></label>
+                        <input class="input" id="notifyEmail" type="email" placeholder="recipient@company.com" autocomplete="email" inputmode="email" />
+                    </div>
+
+                    <div class="send__actions">
+                        <button class="btn btn--primary" id="uploadBtn" type="button">
+                            <svg width="14" height="14" aria-hidden="true"><use href="#i-upload" /></svg>
+                            Upload
                         </button>
+                        <button class="btn btn--quiet" id="clearBtn" type="button">Clear</button>
+                        <span class="send__note muted" id="sendNote" role="status" aria-live="polite">No files selected</span>
+                    </div>
+
+                    <div class="result" id="result" hidden>
+                        <div class="result__head">
+                            <svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg>
+                            Transfer ready
+                        </div>
+                        <div class="result__row">
+                            <label class="sr-only" for="resultLink">Share link</label>
+                            <input class="input" id="resultLink" type="text" readonly value="" />
+                            <button class="btn btn--ghost btn--sm" id="copyBtn" type="button">
+                                <svg width="13" height="13" aria-hidden="true"><use href="#i-copy" /></svg>
+                                Copy
+                            </button>
+                        </div>
+                        <div class="result__meta" id="resultMeta"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- STATS -->
-    <section class="max-w-5xl mx-auto px-6 py-10">
-        <div class="glass rounded-2xl p-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="fade-in text-center">
-                <div class="stat-num text-3xl md:text-4xl font-extrabold text-grad" data-target="850" data-suffix="M">0</div>
-                <div class="text-xs mt-1" style="color:var(--color-text-muted);">Files synced / month</div>
+    <!-- METRICS -->
+    <section class="section section--tight" id="network">
+        <div class="container">
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat__num" data-count="99.99" data-decimals="2" data-suffix="%">0%</div>
+                    <div class="stat__label">Uptime, trailing 90 days</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num" data-count="42" data-suffix="">0</div>
+                    <div class="stat__label">Edge regions</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num" data-count="480" data-suffix=" TB">0</div>
+                    <div class="stat__label">Moved every day</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num" data-count="38" data-suffix=" ms">0</div>
+                    <div class="stat__label">Median TTFB, Frankfurt</div>
+                </div>
             </div>
-            <div class="fade-in text-center">
-                <div class="stat-num text-3xl md:text-4xl font-extrabold text-grad" data-target="186" data-suffix="M">0</div>
-                <div class="text-xs mt-1" style="color:var(--color-text-muted);">Active users</div>
-            </div>
-            <div class="fade-in text-center">
-                <div class="stat-num text-3xl md:text-4xl font-extrabold text-grad" data-target="99.99" data-suffix="%" data-decimals="2">0</div>
-                <div class="text-xs mt-1" style="color:var(--color-text-muted);">Uptime SLA</div>
-            </div>
-            <div class="fade-in text-center">
-                <div class="stat-num text-3xl md:text-4xl font-extrabold text-grad" data-target="42" data-suffix="+">0</div>
-                <div class="text-xs mt-1" style="color:var(--color-text-muted);">Regions worldwide</div>
+
+            <div class="uptime-block">
+                <div class="uptime-block__head">
+                    <span class="small muted">Daily uptime · every region</span>
+                    <span class="small muted">90 days · last incident 24 Sep 2026 (11 min)</span>
+                </div>
+                <div class="uptime" id="uptimeMain" aria-hidden="true"></div>
+                <div class="uptime-block__legend small muted">
+                    <span>90 days ago</span>
+                    <span>today</span>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- FEATURES -->
-    <section id="features" class="max-w-7xl mx-auto px-6 py-20">
-        <div class="text-center mb-14 fade-in">
-            <h2 class="text-3xl md:text-4xl font-bold">Everything your workflow needs</h2>
-            <p class="mt-4 max-w-2xl mx-auto" style="color:var(--color-text-muted);">A single platform for sync, backup, and sharing — built for scale.</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(56,189,248,0.12);color:#38bdf8;">
-                    <i class="fas fa-sync-alt text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">Continuous sync</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">Incremental, delta-based sync keeps every device in perfect harmony, even on flaky connections.</p>
+    <section class="section" id="features">
+        <div class="container">
+            <div class="reveal" style="display:grid;justify-items:center;text-align:center;">
+                <p class="eyebrow">Platform</p>
+                <h2 class="h2">Everything a file touches, in one place</h2>
+                <p class="lede">Sync, transfer, versioning and audit share one object store, one permission model and one invoice.</p>
             </div>
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(167,139,250,0.12);color:#a78bfa;">
-                    <i class="fas fa-lock text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">Zero-knowledge encryption</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">End-to-end encryption means only you can read your data. We literally cannot see it.</p>
-            </div>
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(52,211,153,0.12);color:#34d399;">
-                    <i class="fas fa-file-archive text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">Smart sharing</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">Generate expiring links, set passwords, and track downloads for files of any size.</p>
-            </div>
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(251,191,36,0.12);color:#fbbf24;">
-                    <i class="fas fa-database text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">Versioned backups</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">Roll back to any point in time with 30-day version history and one-click restore.</p>
-            </div>
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(244,63,94,0.12);color:#f43f5e;">
-                    <i class="fas fa-bolt text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">Edge delivery</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">Content cached across 42+ regions for sub-100ms access from anywhere on the planet.</p>
-            </div>
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <div class="icon-wrap w-12 h-12 rounded-xl flex items-center justify-center mb-5" style="background:rgba(96,165,250,0.12);color:#60a5fa;">
-                    <i class="fas fa-code text-lg"></i>
-                </div>
-                <h3 class="font-semibold text-lg">API & integrations</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">REST API, webhooks, and native integrations for the tools you already use.</p>
+
+            <div class="grid grid-3 u-mt-lg">
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-bolt" /></svg></span>
+                    <h3 class="h3">Delta sync engine</h3>
+                    <p>Only changed blocks leave the device, so a two-line edit to a 1 GB file costs about 8 MB of traffic.</p>
+                    <ul>
+                        <li>Block-level deduplication</li>
+                        <li>Resumes on flaky connections</li>
+                        <li>Conflict copies instead of silent overwrites</li>
+                    </ul>
+                </article>
+
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-lock" /></svg></span>
+                    <h3 class="h3">Zero-knowledge encryption</h3>
+                    <p>Files are sealed with AES-256-GCM on the client. Keys are derived locally with Argon2id and never reach the server.</p>
+                    <ul>
+                        <li>Client-side key derivation</li>
+                        <li>Optional organisation key escrow</li>
+                        <li>Encrypted filename index</li>
+                    </ul>
+                </article>
+
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-upload" /></svg></span>
+                    <h3 class="h3">Large-file transfers</h3>
+                    <p>Send a 20 GB master or a folder of stills through one link. Receivers need nothing but a browser.</p>
+                    <ul>
+                        <li>20 GB per file, multipart upload</li>
+                        <li>Password, expiry and download limit</li>
+                        <li>Download receipts by e-mail</li>
+                    </ul>
+                </article>
+
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-clock" /></svg></span>
+                    <h3 class="h3">Version history</h3>
+                    <p>Every save keeps a version. Restore a single file or a whole folder from any point inside the retention window.</p>
+                    <ul>
+                        <li>30 days on Starter, 1 year on Business</li>
+                        <li>Restore by file or by folder</li>
+                        <li>Legal hold for regulated teams</li>
+                    </ul>
+                </article>
+
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-globe" /></svg></span>
+                    <h3 class="h3">Edge network</h3>
+                    <p>42 regions with signed URLs and multipart uploads, so a 4K review opens in seconds from almost anywhere.</p>
+                    <ul>
+                        <li>38 ms median TTFB in Frankfurt</li>
+                        <li>EU or US residency, pinned per workspace</li>
+                        <li>HTTP/3 and IPv6 on every region</li>
+                    </ul>
+                </article>
+
+                <article class="card card--hover feature reveal">
+                    <span class="icon-tile"><svg width="16" height="16" aria-hidden="true"><use href="#i-code" /></svg></span>
+                    <h3 class="h3">API, CLI &amp; WebDAV</h3>
+                    <p>Anything the app can do, the API can do — transfers, permissions, audit events and webhooks.</p>
+                    <ul>
+                        <li>REST plus S3-compatible endpoints</li>
+                        <li>First-party <span class="mono">451404</span> CLI</li>
+                        <li>Terraform provider and webhooks</li>
+                    </ul>
+                </article>
             </div>
         </div>
     </section>
 
-    <!-- SECURITY / LIVE ACTIVITY -->
-    <section id="security" class="max-w-7xl mx-auto px-6 py-20">
-        <div class="grid md:grid-cols-2 gap-10 items-center">
-            <div class="fade-in">
-                <h2 class="text-3xl md:text-4xl font-bold">Trusted by teams that can't afford downtime</h2>
-                <p class="mt-4" style="color:var(--color-text-muted);">Enterprise-grade security, compliance, and observability out of the box.</p>
-                <ul class="mt-6 space-y-3 text-sm">
-                    <li class="flex items-center gap-3"><i class="fas fa-check-circle" style="color:#34d399;"></i> SOC 2 Type II & ISO 27001 certified</li>
-                    <li class="flex items-center gap-3"><i class="fas fa-check-circle" style="color:#34d399;"></i> GDPR, HIPAA & CCPA compliant</li>
-                    <li class="flex items-center gap-3"><i class="fas fa-check-circle" style="color:#34d399;"></i> SSO, SCIM & LDAP built in</li>
-                    <li class="flex items-center gap-3"><i class="fas fa-check-circle" style="color:#34d399;"></i> Audit logs & 90-day retention</li>
-                </ul>
-            </div>
-            <div class="glass rounded-2xl p-6 fade-in">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold flex items-center gap-2"><i class="fas fa-satellite-dish" style="color:#38bdf8;"></i> Live global traffic</h3>
-                    <span class="text-xs px-2 py-1 rounded-full" style="background:rgba(52,211,153,0.15);color:#34d399;"><span class="inline-block w-1.5 h-1.5 rounded-full animate-pulse mr-1" style="background:#34d399;"></span>Live</span>
+    <!-- API -->
+    <section class="section" id="api">
+        <div class="container">
+            <div class="api__grid">
+                <div class="reveal">
+                    <p class="eyebrow">Developers</p>
+                    <h2 class="h2">Automate it from a terminal or a pipeline</h2>
+                    <p class="lede">The REST API covers transfers, permissions and audit events. S3-compatible endpoints and WebDAV are there for the tools that already expect them.</p>
+                    <ul class="checks">
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Personal access tokens scoped per workspace</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Signed URLs valid for 15 minutes by default</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Webhooks for <span class="mono">upload.created</span>, <span class="mono">share.downloaded</span>, <span class="mono">user.removed</span></li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Idempotency keys on every write request</li>
+                    </ul>
+                    <div class="chips">
+                        <span class="chip">Terraform</span>
+                        <span class="chip">rclone</span>
+                        <span class="chip">GitHub Actions</span>
+                        <span class="chip">Slack</span>
+                        <span class="chip">Okta</span>
+                        <span class="chip">Zapier</span>
+                    </div>
                 </div>
-                <div id="activityFeed" class="space-y-2 text-xs font-mono" style="color:var(--color-text-muted);"></div>
+
+                <div class="card code-card reveal">
+                    <div class="code__bar">
+                        <span class="code__tab is-on">curl</span>
+                        <span class="code__tab">node</span>
+                        <span class="code__tab">python</span>
+                        <span class="code__copy">
+                            <button class="btn btn--ghost btn--sm" type="button" data-copy="codeSample">Copy</button>
+                        </span>
+                    </div>
+                    <pre class="code" id="codeSample"><code><span class="tok-com"># API_BASE is shown in Settings → API</span>
+<span class="tok-key">curl</span> <span class="tok-str">"$API_BASE/v1/transfers"</span> \
+  -H <span class="tok-str">"Authorization: Bearer $TOKEN"</span> \
+  -F <span class="tok-str">"file=@q3-architecture.pdf"</span> \
+  -F <span class="tok-str">"expires_in=604800"</span> \
+  -F <span class="tok-str">"password=t3am-only"</span>
+
+{
+  <span class="tok-key">"id"</span>: <span class="tok-str">"tr_8QpL2x"</span>,
+  <span class="tok-key">"url"</span>: <span class="tok-str">"/s/k7m2pd"</span>,
+  <span class="tok-key">"expires_at"</span>: <span class="tok-str">"2026-11-11T09:12:04Z"</span>,
+  <span class="tok-key">"bytes"</span>: 4382712,
+  <span class="tok-key">"checksum"</span>: <span class="tok-str">"sha256:6b1c…9f04"</span>
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECURITY / STATUS -->
+    <section class="section" id="security">
+        <div class="container">
+            <div class="security__grid">
+                <div class="reveal">
+                    <p class="eyebrow">Security &amp; compliance</p>
+                    <h2 class="h2">Your data, your keys, your region</h2>
+                    <p class="lede">Files are encrypted on the device before they leave it. The service stores ciphertext, checksums and a manifest — nothing it can read.</p>
+                    <ul class="checks">
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> AES-256-GCM content encryption, Argon2id key derivation</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> TLS 1.3 with HSTS preload on every endpoint</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> EU (Frankfurt) or US (Ashburn) residency, pinned per workspace</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> SSO, SCIM and LDAP included from the Business plan</li>
+                        <li><svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg> Audit log with 90-day retention, exportable as JSONL</li>
+                    </ul>
+                    <p class="small muted u-mt">
+                        Report a vulnerability through the <a class="link" href="#start">security contact form</a> · PGP 0x8E1C44A2 · <a class="link" href="#legal">status history</a>
+                    </p>
+                </div>
+
+                <div class="card reveal" id="status">
+                    <div class="status__head">
+                        <div>
+                            <h3 class="h3">Service status</h3>
+                            <p class="small muted">Checked 30 seconds ago</p>
+                        </div>
+                        <span class="pill"><span class="dot" aria-hidden="true"></span> Operational</span>
+                    </div>
+                    <ul class="status__list">
+                        <li><span>Web app</span><span class="mono">p95 112 ms</span><span class="dot" aria-hidden="true"></span></li>
+                        <li><span>Upload API</span><span class="mono">p95 184 ms</span><span class="dot" aria-hidden="true"></span></li>
+                        <li><span>Sync API</span><span class="mono">p95 96 ms</span><span class="dot" aria-hidden="true"></span></li>
+                        <li><span>E-mail delivery</span><span class="mono">p95 1.2 s</span><span class="dot dot--warn" aria-hidden="true"></span></li>
+                        <li><span>Authentication</span><span class="mono">p95 74 ms</span><span class="dot" aria-hidden="true"></span></li>
+                    </ul>
+                    <div class="uptime u-mt" id="uptimeStatus" aria-hidden="true"></div>
+                    <p class="small muted u-mt-s">90-day uptime 99.99% · one degraded window on 24 Sep 2026</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="section section--tight" id="customers">
+        <div class="container">
+            <p class="logo-strip__label small muted">Used by 12,400 teams in 38 countries</p>
+            <div class="logo-strip" aria-label="Customers">
+                <span>Northwind Labs</span>
+                <span>Meridian Health</span>
+                <span>Kestrel Studios</span>
+                <span>Pattern &amp; Co</span>
+                <span>Tessellate</span>
+                <span>Oslo Maritime</span>
+            </div>
+
+            <div class="grid grid-3 u-mt-lg">
+                <figure class="card quote reveal">
+                    <blockquote>“We replaced three tools with one. Delta sync alone saves our post team about forty minutes a day on 4K review files.”</blockquote>
+                    <figcaption>
+                        <span class="avatar" style="background:linear-gradient(150deg,#38bdf8,#8b8cf6);color:#04121f" aria-hidden="true">MH</span>
+                        <span>
+                            <span class="quote__name">Marta Højgaard</span>
+                            <span class="small muted" style="display:block">Head of Post, Kestrel Studios</span>
+                        </span>
+                    </figcaption>
+                </figure>
+
+                <figure class="card quote reveal">
+                    <blockquote>“Audit asked who downloaded the discharge summaries. We had the answer in under a minute, with hashes.”</blockquote>
+                    <figcaption>
+                        <span class="avatar" style="background:linear-gradient(150deg,#34d399,#38bdf8);color:#04121f" aria-hidden="true">RA</span>
+                        <span>
+                            <span class="quote__name">Ravi Anand</span>
+                            <span class="small muted" style="display:block">IT Lead, Meridian Health</span>
+                        </span>
+                    </figcaption>
+                </figure>
+
+                <figure class="card quote reveal">
+                    <blockquote>“The CLI does what the UI does. Our nightly backups are a twelve-line script and they have not failed once.”</blockquote>
+                    <figcaption>
+                        <span class="avatar" style="background:linear-gradient(150deg,#8b8cf6,#f472b6);color:#04121f" aria-hidden="true">LK</span>
+                        <span>
+                            <span class="quote__name">Lena Kowalski</span>
+                            <span class="small muted" style="display:block">Platform Engineer, Tessellate</span>
+                        </span>
+                    </figcaption>
+                </figure>
             </div>
         </div>
     </section>
 
     <!-- PRICING -->
-    <section id="pricing" class="max-w-7xl mx-auto px-6 py-20">
-        <div class="text-center mb-14 fade-in">
-            <h2 class="text-3xl md:text-4xl font-bold">Simple, transparent pricing</h2>
-            <p class="mt-4" style="color:var(--color-text-muted);">Start free. Upgrade when your team grows.</p>
+    <section class="section" id="pricing">
+        <div class="container">
+            <div class="pricing__head">
+                <p class="eyebrow">Pricing</p>
+                <h2 class="h2">Per seat, per month, no surprises</h2>
+                <p class="lede">Storage is pooled across the workspace, so one seat can hold a terabyte of archives. Prices exclude VAT.</p>
+                <div class="pricing__controls">
+                    <div class="segmented" role="group" aria-label="Billing period">
+                        <button type="button" data-cycle="monthly" aria-pressed="false">Monthly</button>
+                        <button type="button" data-cycle="annual" class="is-on" aria-pressed="true">Annual <span class="save">−20%</span></button>
+                    </div>
+                    <div class="segmented" role="group" aria-label="Currency">
+                        <button type="button" data-currency="USD" class="is-on" aria-pressed="true">USD</button>
+                        <button type="button" data-currency="EUR" aria-pressed="false">EUR</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-3 pricing__grid">
+                <article class="card plan reveal">
+                    <h3 class="h3">Starter</h3>
+                    <p class="small muted">For individuals and small side projects.</p>
+                    <p class="price"><span data-plan-price="starter">$0</span><small>/user/mo</small></p>
+                    <p class="plan__note" data-plan-note="starter">Free forever · up to 3 users</p>
+                    <button class="btn btn--ghost plan__cta" type="button" data-auth="signup">Start free</button>
+                    <ul class="checks checks--sm">
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 100 GB pooled storage</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 5 GB per transfer</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 30-day version history</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> Community support</li>
+                    </ul>
+                </article>
+
+                <article class="card plan plan--featured reveal">
+                    <span class="plan__flag">Most popular</span>
+                    <h3 class="h3">Business</h3>
+                    <p class="small muted">For teams that move real files.</p>
+                    <p class="price"><span data-plan-price="business">$9</span><small>/user/mo</small></p>
+                    <p class="plan__note" data-plan-note="business">Billed annually · $108 per user</p>
+                    <button class="btn btn--primary plan__cta" type="button" data-auth="signup">Start 14-day trial</button>
+                    <ul class="checks checks--sm">
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 5 TB pooled storage</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 20 GB per transfer</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 1-year version history</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> SSO, SCIM, audit log</li>
+                    </ul>
+                </article>
+
+                <article class="card plan reveal">
+                    <h3 class="h3">Enterprise</h3>
+                    <p class="small muted">For regulated and very large estates.</p>
+                    <p class="price"><span data-plan-price="enterprise">Custom</span></p>
+                    <p class="plan__note" data-plan-note="enterprise">Annual contract · invoicing available</p>
+                    <a class="btn btn--ghost plan__cta" href="#start">Contact sales</a>
+                    <ul class="checks checks--sm">
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> Unlimited pooled storage</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> Dedicated regions &amp; BYOK</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> Legal hold &amp; DLP hooks</li>
+                        <li><svg width="14" height="14" aria-hidden="true"><use href="#i-check" /></svg> 99.99% SLA, 24/7 on-call</li>
+                    </ul>
+                </article>
+            </div>
+
+            <div class="card card--lg u-mt-lg">
+                <h3 class="h3">Compare plans</h3>
+                <div class="cmp-wrap u-mt">
+                    <table class="cmp">
+                        <thead>
+                            <tr>
+                                <th scope="col">Feature</th>
+                                <th scope="col">Starter</th>
+                                <th scope="col">Business</th>
+                                <th scope="col">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Pooled storage</td><td>100 GB</td><td>5 TB</td><td>Unlimited</td></tr>
+                            <tr><td>Max file size</td><td>5 GB</td><td>20 GB</td><td>20 GB</td></tr>
+                            <tr><td>Version history</td><td>30 days</td><td>1 year</td><td>Custom</td></tr>
+                            <tr><td>Edge regions</td><td>8</td><td>42</td><td>42 + dedicated</td></tr>
+                            <tr><td>SSO / SCIM</td><td>—</td><td>Included</td><td>Included</td></tr>
+                            <tr><td>Audit log export</td><td>—</td><td>JSONL, 90 days</td><td>JSONL, 7 years</td></tr>
+                            <tr><td>Support</td><td>Community</td><td>Business hours</td><td>24/7 on-call</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="small muted u-mt">All plans include client-side encryption, resumable transfers and the REST API. <a class="link" href="#start">Volume pricing</a> from 250 seats.</p>
+            </div>
         </div>
-        <div class="grid md:grid-cols-3 gap-6 items-center">
-            <!-- Starter -->
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <h3 class="font-semibold">Starter</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">For individuals & side projects.</p>
-                <div class="mt-4"><span class="text-4xl font-extrabold">$0</span><span class="text-sm" style="color:var(--color-text-muted);">/mo</span></div>
-                <ul class="mt-5 space-y-2 text-sm" style="color:var(--color-text-muted);">
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> 100 GB storage</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Cross-device sync</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> 30-day versioning</li>
-                </ul>
-                <button class="pricing-btn w-full mt-6 py-2.5 rounded-lg border font-medium transition-colors hover:bg-white/5" style="border-color:var(--color-border);">Get started</button>
-            </div>
-            <!-- Pro (highlighted) -->
-            <div class="card-hover rounded-2xl p-7 fade-in relative" style="background:linear-gradient(180deg,rgba(56,189,248,0.14),rgba(167,139,250,0.10));border:1px solid rgba(56,189,248,0.4);">
-                <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs px-3 py-1 rounded-full text-white font-semibold" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);">Most popular</span>
-                <h3 class="font-semibold">Pro</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">For power users & small teams.</p>
-                <div class="mt-4"><span class="text-4xl font-extrabold">$12</span><span class="text-sm" style="color:var(--color-text-muted);">/mo</span></div>
-                <ul class="mt-5 space-y-2 text-sm" style="color:var(--color-text-muted);">
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> 5 TB storage</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Priority sync & edge delivery</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Advanced sharing controls</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Priority support</li>
-                </ul>
-                <button class="pricing-btn glow-btn w-full mt-6 py-2.5 rounded-lg text-white font-semibold">Upgrade to Pro</button>
-            </div>
-            <!-- Enterprise -->
-            <div class="card-hover glass rounded-2xl p-7 fade-in">
-                <h3 class="font-semibold">Enterprise</h3>
-                <p class="mt-2 text-sm" style="color:var(--color-text-muted);">For organizations at scale.</p>
-                <div class="mt-4"><span class="text-4xl font-extrabold">Custom</span></div>
-                <ul class="mt-5 space-y-2 text-sm" style="color:var(--color-text-muted);">
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Unlimited storage</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> Dedicated regions</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> SSO, SCIM & audit logs</li>
-                    <li><i class="fas fa-check" style="color:#34d399;"></i> 24/7 dedicated support</li>
-                </ul>
-                <button class="pricing-btn w-full mt-6 py-2.5 rounded-lg border font-medium transition-colors hover:bg-white/5" style="border-color:var(--color-border);">Contact sales</button>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section--tight" id="faq">
+        <div class="container">
+            <h2 class="h2">Questions we get on sales calls</h2>
+            <div class="faq u-mt">
+                <details class="qa">
+                    <summary>Do recipients need an account to download a file?</summary>
+                    <p>No. A share link opens the file in any modern browser. Accounts only matter on the sending side, where permissions and audit logs live.</p>
+                </details>
+                <details class="qa">
+                    <summary>What happens when an upload is interrupted?</summary>
+                    <p>Transfers resume from the last acknowledged chunk, so a dropped connection costs you seconds rather than the whole file. The same applies to 20 GB uploads over mobile networks.</p>
+                </details>
+                <details class="qa">
+                    <summary>Can 451404 read my files?</summary>
+                    <p>No. Files are encrypted on your device with AES-256-GCM before they leave it, and keys are derived locally with Argon2id. The service stores ciphertext, checksums and a manifest.</p>
+                </details>
+                <details class="qa">
+                    <summary>Where is my data stored?</summary>
+                    <p>Each workspace is pinned to Frankfurt (EU) or Ashburn (US) at creation time. Replication stays inside that region, and the setting cannot be changed silently by support.</p>
+                </details>
+                <details class="qa">
+                    <summary>Can I cancel in the middle of a billing period?</summary>
+                    <p>Yes. Cancelling stops the next renewal and unused full months are credited back to the original payment method within 5 business days.</p>
+                </details>
             </div>
         </div>
     </section>
 
     <!-- CTA -->
-    <section id="enterprise" class="max-w-5xl mx-auto px-6 py-20">
-        <div class="glass rounded-3xl p-10 md:p-16 text-center fade-in relative overflow-hidden">
-            <div class="absolute inset-0 opacity-40" style="background:radial-gradient(500px 200px at 50% -20%, rgba(56,189,248,0.4), transparent 70%);"></div>
-            <div class="relative">
-                <h2 class="text-3xl md:text-4xl font-bold">Ready to move terabytes with confidence?</h2>
-                <p class="mt-4 max-w-xl mx-auto" style="color:var(--color-text-muted);">Join 186M users who trust 451404 with their most important files.</p>
-                <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-                    <input id="emailInput" type="email" placeholder="you@company.com" class="flex-1 px-4 py-3 rounded-lg text-sm" style="background:rgba(2,6,23,0.6);border:1px solid var(--color-border);color:#fff;" />
-                    <button id="ctaEmail" class="glow-btn px-6 py-3 rounded-lg font-semibold text-white whitespace-nowrap">Start free trial</button>
-                </div>
+    <section class="section" id="start">
+        <div class="container">
+            <div class="cta reveal">
+                <h2 class="h2">Move 20 GB today, decide later</h2>
+                <p class="lede">A 14-day Business trial, no card required. Cancel from the dashboard in one click.</p>
+                <form class="cta__form" id="signupForm" novalidate>
+                    <label class="sr-only" for="ctaEmail">Work e-mail</label>
+                    <input class="input" id="ctaEmail" type="email" name="email" placeholder="you@company.com" autocomplete="email" aria-describedby="ctaErr" required />
+                    <button class="btn btn--primary" type="submit">Create workspace</button>
+                </form>
+                <p class="err u-mt-s" id="ctaErr" role="alert"></p>
+                <p class="success" id="ctaOk" role="status" hidden>Check your inbox — we sent a confirmation link to <span id="ctaSentTo"></span>.</p>
+                <label class="consent">
+                    <input type="checkbox" id="ctaConsent" />
+                    <span class="muted">I agree to the <a class="link" href="#legal">Terms</a> and <a class="link" href="#legal">Privacy Policy</a>.</span>
+                </label>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="border-t max-w-7xl mx-auto px-6 py-12" style="border-color:var(--color-border);">
-        <div class="grid md:grid-cols-5 gap-8 text-sm">
-            <div>
-                <div class="flex items-center gap-2.5 font-bold mb-3">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);"><i class="fas fa-cloud text-white text-sm"></i></span>
-                    451404
-                </div>
-                <p class="text-xs" style="color:var(--color-text-muted);">Secure cloud sync & storage for modern teams.</p>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-3">Product</h4>
-                <ul class="space-y-2 text-xs" style="color:var(--color-text-muted);">
-                    <li><a href="#" class="hover:text-white">Features</a></li>
-                    <li><a href="#" class="hover:text-white">Pricing</a></li>
-                    <li><a href="#" class="hover:text-white">Integrations</a></li>
-                    <li><a href="#" class="hover:text-white">Changelog</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-3">Company</h4>
-                <ul class="space-y-2 text-xs" style="color:var(--color-text-muted);">
-                    <li><a href="#" class="hover:text-white">About</a></li>
-                    <li><a href="#" class="hover:text-white">Blog</a></li>
-                    <li><a href="#" class="hover:text-white">Careers</a></li>
-                    <li><a href="#" class="hover:text-white">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-3">Legal</h4>
-                <ul class="space-y-2 text-xs" style="color:var(--color-text-muted);">
-                    <li><a href="#" class="hover:text-white">Privacy</a></li>
-                    <li><a href="#" class="hover:text-white">Terms</a></li>
-                    <li><a href="#" class="hover:text-white">Security</a></li>
-                    <li><a href="#" class="hover:text-white">GDPR</a></li>
-                </ul>
+    <!-- LEGAL -->
+    <section class="section section--tight" id="legal">
+        <div class="container">
+            <h2 class="h2">Legal</h2>
+            <div class="faq u-mt">
+                <details class="qa">
+                    <summary>Privacy policy (summary)</summary>
+                    <p>451404 GmbH processes account data (name, e-mail, billing details) to run the service, and file metadata (size, checksum, timestamps) to keep it consistent. File contents stay encrypted with keys we do not hold. Data is stored in Frankfurt or Ashburn depending on the workspace, retained for 30 days after deletion, and never sold. Requests are handled through the support form in your workspace.</p>
+                </details>
+                <details class="qa">
+                    <summary>Terms of service (summary)</summary>
+                    <p>The service is provided under a 99.99% monthly uptime commitment for Business and Enterprise plans. Customers keep ownership of all files and are responsible for the content they share. Fair-use limits apply to the Starter plan. Governing law is German law, venue Berlin. Full contract text is sent with every invoice.</p>
+                </details>
+                <details class="qa">
+                    <summary>Sub-processors &amp; DPA</summary>
+                    <p>Hosting: our own infrastructure in Frankfurt and Ashburn. E-mail delivery: a regional transactional provider in the EU. Billing: a payment processor in the EU. Support ticketing: EU-hosted. A signed DPA with SCCs is available on request from your account manager; changes are announced 30 days in advance.</p>
+                </details>
             </div>
         </div>
-        <div class="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs" style="border-top:1px solid var(--color-border);color:var(--color-text-muted);">
-            <p>&copy; 2026 451404, Inc. All rights reserved.</p>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="hover:text-white"><i class="fab fa-github"></i></a>
-                <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+    </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a class="brand" href="#top" aria-label="451404 — home">
+                        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+                            <rect width="32" height="32" rx="9" fill="url(#brandGrad)" />
+                            <path d="M10 20.5a4 4 0 0 1 .6-7.96A5.2 5.2 0 0 1 21 13a3.8 3.8 0 0 1 .4 7.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M16 15.6v6.6m0 0 2.5-2.5M16 22.2l-2.5-2.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span class="brand__name">451404</span>
+                    </a>
+                    <p class="footer-entity">
+                        451404 GmbH<br />
+                        Chausseestraße 74, 10115 Berlin, Germany<br />
+                        HRB 241889 B · USt-IdNr. DE327441902
+                    </p>
+                    <p class="u-mt-s">
+                        <a class="pill" href="#status"><span class="dot" aria-hidden="true"></span> All systems operational</a>
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#features">Sync engine</a>
+                    <a href="#send">Transfers</a>
+                    <a href="#network">Edge network</a>
+                    <a href="#api">API &amp; CLI</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Solutions</h4>
+                    <a href="#customers">For teams</a>
+                    <a href="#security">Security</a>
+                    <a href="#status">Status</a>
+                    <a href="#send">Send a file</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#customers">Customers</a>
+                    <a href="#security">Security</a>
+                    <a href="#status">Status</a>
+                    <a href="#faq">Support</a>
+                    <a href="#start">Contact</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#legal">Privacy</a>
+                    <a href="#legal">Terms</a>
+                    <a href="#legal">DPA &amp; sub-processors</a>
+                    <a href="#security">Security disclosure</a>
+                    <a href="#legal">Report abuse</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; <span id="curYear">2026</span> 451404 GmbH. All rights reserved.</p>
+                <div class="footer-social">
+                    <a class="icon-btn" href="#pricing" aria-label="Plans and pricing">
+                        <svg width="15" height="15" aria-hidden="true"><use href="#i-db" /></svg>
+                    </a>
+                    <a class="icon-btn" href="#api" aria-label="API documentation">
+                        <svg width="15" height="15" aria-hidden="true"><use href="#i-code" /></svg>
+                    </a>
+                    <a class="icon-btn" href="#status" aria-label="Service status">
+                        <svg width="15" height="15" aria-hidden="true"><use href="#i-server" /></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(2,6,23,0.72);backdrop-filter:blur(4px);">
-        <div class="glass rounded-2xl p-6 w-full max-w-sm relative" role="dialog" aria-modal="true">
-            <button id="modalClose" class="absolute top-4 right-4 text-muted transition-colors hover:text-white" style="color:var(--color-text-muted);"><i class="fas fa-times"></i></button>
-            <div class="text-center mb-5">
-                <span class="inline-flex items-center justify-center w-11 h-11 rounded-xl mb-3" style="background:linear-gradient(135deg,#38bdf8,#a78bfa);"><i class="fas fa-cloud text-white"></i></span>
-                <h3 class="font-semibold text-lg" id="modalTitle">Welcome to 451404</h3>
-                <p class="text-xs" style="color:var(--color-text-muted);" id="modalSub">Sign in to access your synced files.</p>
+    <!-- Consent -->
+    <div class="cookies" id="cookieBanner" role="region" aria-label="Cookie preferences">
+        <p>We use one strictly necessary cookie for sessions and, with your consent, one analytics cookie. No advertising trackers.</p>
+        <div class="cookies__actions">
+            <button class="btn btn--quiet btn--sm" type="button" data-cookie="essential">Essential only</button>
+            <button class="btn btn--ghost btn--sm" type="button" data-cookie="all">Accept all</button>
+        </div>
+    </div>
+
+    <!-- Auth modal -->
+    <div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-describedby="authSub">
+        <div class="modal__card">
+            <button class="icon-btn modal__close" id="authClose" type="button" aria-label="Close sign-in">
+                <svg width="16" height="16" aria-hidden="true"><use href="#i-x" /></svg>
+            </button>
+            <div class="modal__head">
+                <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+                    <rect width="32" height="32" rx="9" fill="url(#brandGrad)" />
+                    <path d="M10 20.5a4 4 0 0 1 .6-7.96A5.2 5.2 0 0 1 21 13a3.8 3.8 0 0 1 .4 7.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M16 15.6v6.6m0 0 2.5-2.5M16 22.2l-2.5-2.5" fill="none" stroke="#050c16" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <h2 class="h3" id="authTitle">Sign in to 451404</h2>
+                <p class="small muted" id="authSub">Use your workspace account. SSO and 2FA are handled by 451404 Access.</p>
             </div>
-            <form id="loginForm" class="space-y-3">
-                <input type="email" placeholder="Work email" class="w-full px-4 py-2.5 rounded-lg text-sm" style="background:rgba(2,6,23,0.6);border:1px solid var(--color-border);color:#fff;" />
-                <input type="password" placeholder="Password" class="w-full px-4 py-2.5 rounded-lg text-sm" style="background:rgba(2,6,23,0.6);border:1px solid var(--color-border);color:#fff;" />
-                <button type="submit" id="loginSubmit" class="glow-btn w-full py-2.5 rounded-lg font-semibold text-white flex items-center justify-center gap-2">
-                    <span class="btn-label">Sign in</span><span class="spinner hidden"></span>
-                </button>
+
+            <form id="authForm" novalidate>
+                <div class="field">
+                    <label class="label" for="authEmail">Work e-mail</label>
+                    <input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@company.com" aria-describedby="authEmailErr" />
+                    <p class="err" id="authEmailErr" role="alert"></p>
+                </div>
+                <div class="field u-mt">
+                    <label class="label" for="authPass">Password</label>
+                    <div class="input-group">
+                        <input class="input" id="authPass" type="password" autocomplete="current-password" aria-describedby="authPassErr" />
+                        <button class="input-group__btn" id="passToggle" type="button" aria-pressed="false">Show</button>
+                    </div>
+                    <p class="err" id="authPassErr" role="alert"></p>
+                </div>
+                <div class="u-row u-between u-mt-s">
+                    <label class="consent" style="margin:0">
+                        <input type="checkbox" id="authRemember" />
+                        <span class="muted">Keep me signed in</span>
+                    </label>
+                    <button class="link small" type="button" id="authForgot">Forgot password?</button>
+                </div>
+                <button class="btn btn--primary u-full u-mt" type="submit" id="authSubmit">Continue</button>
             </form>
-            <p class="text-center text-xs mt-4" style="color:var(--color-text-muted);">Secured by <span class="font-medium">451404 Auth</span></p>
+
+            <div class="or" id="authOr">or</div>
+            <div class="sso" id="authSso">
+                <button class="btn btn--ghost u-full" type="button" data-auth-sso="Google Workspace">Continue with Google Workspace</button>
+                <button class="btn btn--ghost u-full" type="button" data-auth-sso="Microsoft Entra">Continue with Microsoft Entra</button>
+            </div>
+            <p class="small muted u-center u-mt" id="authSignup">
+                New here? <a class="link" href="#start">Create a workspace</a>
+            </p>
+
+            <div class="auth-done" id="authDone" hidden>
+                <svg width="22" height="22" aria-hidden="true"><use href="#i-mail" /></svg>
+                <p class="small muted">
+                    <span id="authDoneLead">We sent a sign-in link to</span>
+                    <strong id="authSentTo"></strong><span id="authDoneTail">. It expires in 10 minutes.</span>
+                </p>
+                <button class="btn btn--ghost u-full" type="button" id="authAgain">Use another account</button>
+            </div>
+
+            <p class="modal__foot">Protected by 451404 Access · <a class="link" href="#legal">Privacy</a></p>
         </div>
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="toast fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl text-sm font-medium" style="background:#0f172a;border:1px solid rgba(52,211,153,0.4);color:#e2e8f0;box-shadow:0 12px 40px -8px rgba(0,0,0,0.5);">
-        <i class="fas fa-check-circle" style="color:#34d399;"></i> <span id="toastMsg">Success</span>
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <svg width="15" height="15" aria-hidden="true"><use href="#i-check" /></svg>
+        <span id="toastMsg"></span>
     </div>
 
     <script>
-        // Fade-in on scroll
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((e, i) => {
-                if (e.isIntersecting) {
-                    setTimeout(() => e.target.classList.add('appear'), i * 60);
-                    io.unobserve(e.target);
-                }
-            });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+        var byId = function (id) { return document.getElementById(id); };
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var toastTimer = null;
 
-        // Animated stat counters
-        function animate(el) {
-            const target = parseFloat(el.dataset.target);
-            const decimals = parseInt(el.dataset.decimals || '0');
-            const suffix = el.dataset.suffix || '';
-            const duration = 1600;
-            const start = performance.now();
-            function tick(now) {
-                const p = Math.min((now - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - p, 3);
-                const val = target * eased;
-                el.textContent = (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toLocaleString()) + suffix;
-                if (p < 1) requestAnimationFrame(tick);
-            }
-            requestAnimationFrame(tick);
-        }
-        const statIO = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) { animate(e.target); statIO.unobserve(e.target); } });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('.stat-num').forEach(el => statIO.observe(el));
-
-        // Live activity feed
-        const cities = ['Frankfurt','Tokyo','Singapore','New York','London','São Paulo','Mumbai','Sydney','Toronto','Amsterdam','Seoul','Lagos'];
-        const actions = ['uploaded 4.2 GB','downloaded 1.8 GB','synced 320 files','shared a 900 MB folder','restored a backup','uploaded 12 GB'];
-        const feed = document.getElementById('activityFeed');
-        const feedItems = [];
-        function addActivity() {
-            const city = cities[Math.floor(Math.random()*cities.length)];
-            const action = actions[Math.floor(Math.random()*actions.length)];
-            const time = Math.floor(Math.random()*59)+1;
-            const li = document.createElement('div');
-            li.className = 'flex items-center justify-between py-1.5 border-b last:border-0';
-            li.style.borderColor = 'rgba(148,163,184,0.1)';
-            li.innerHTML = `<span><i class="fas fa-arrow-right" style="color:#38bdf8;margin-right:6px;"></i>${city} <span style="color:#e2e8f0;">${action}</span></span><span class="text-neutral-500">${time}s ago</span>`;
-            feedItems.unshift(li);
-            feed.appendChild(li);
-            while (feedItems.length > 6) { const old = feedItems.pop(); if (old && old.parentNode) old.parentNode.removeChild(old); }
-        }
-        for (let i=0;i<5;i++) addActivity();
-        setInterval(addActivity, 2600);
-
-        // Modal
-        const modal = document.getElementById('modal');
-        function openModal(title, sub) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalSub').textContent = sub;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-        document.getElementById('loginBtn').addEventListener('click', () => openModal('Welcome back', 'Sign in to access your synced files.'));
-        document.getElementById('ctaNav').addEventListener('click', () => openModal('Start free', 'Create your account in 30 seconds.'));
-        document.getElementById('ctaHero').addEventListener('click', () => openModal('Start free', 'Create your account in 30 seconds.'));
-        document.getElementById('ctaDemo').addEventListener('click', () => showToast('Demo video is not available in this environment.'));
-        document.getElementById('modalClose').addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-        // Login form (fake)
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('loginSubmit');
-            const label = btn.querySelector('.btn-label');
-            const spinner = btn.querySelector('.spinner');
-            label.classList.add('hidden'); spinner.classList.remove('hidden');
-            btn.disabled = true;
-            setTimeout(() => {
-                spinner.classList.add('hidden'); label.classList.remove('hidden');
-                btn.disabled = false;
-                closeModal();
-                showToast('This is a demo placeholder page.');
-            }, 1200);
-        });
-
-        // Email CTA
-        document.getElementById('ctaEmail').addEventListener('click', () => {
-            const v = document.getElementById('emailInput').value.trim();
-            if (!v || !v.includes('@')) { showToast('Please enter a valid email.'); return; }
-            showToast('Thanks! This is a demo placeholder page.');
-            document.getElementById('emailInput').value = '';
-        });
-
-        // Pricing buttons
-        document.querySelectorAll('.pricing-btn').forEach(b => b.addEventListener('click', () => {
-            const plan = b.closest('div').querySelector('h3').textContent;
-            if (plan === 'Enterprise') openModal('Contact sales', 'Our team will reach out within 24 hours.');
-            else openModal('Upgrade to ' + plan, 'Upgrade your ' + plan.toLowerCase() + ' plan.');
-        }));
-
-        // Toast
-        let toastTimer;
-        function showToast(msg) {
-            document.getElementById('toastMsg').textContent = msg;
-            const t = document.getElementById('toast');
-            t.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+        function showToast(message) {
+            var toast = byId('toast');
+            var label = byId('toastMsg');
+            if (!toast || !label) return;
+            label.textContent = message;
+            toast.classList.add('is-on');
+            window.clearTimeout(toastTimer);
+            toastTimer = window.setTimeout(function () { toast.classList.remove('is-on'); }, 3600);
         }
 
-        // Theme toggle (cosmetic demo)
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            showToast('This page ships in dark mode only.');
-        });
-
-        // ---- Fake upload window ----
-        const fileList = document.getElementById('fileList');
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const demoBtn = document.getElementById('demoUpload');
-        const startBtn = document.getElementById('startUpload');
-
-        function fmtSize(b) {
-            if (b < 1024) return b + ' B';
-            if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
-            if (b < 1024 * 1024 * 1024) return (b / 1024 / 1024).toFixed(1) + ' MB';
-            return (b / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-        }
-
-        function iconFor(name) {
-            const ext = name.split('.').pop().toLowerCase();
-            const map = {
-                pdf: 'fa-file-pdf', jpg: 'fa-file-image', jpeg: 'fa-file-image',
-                png: 'fa-file-image', gif: 'fa-file-image', webp: 'fa-file-image',
-                zip: 'fa-file-archive', rar: 'fa-file-archive', '7z': 'fa-file-archive',
-                mp4: 'fa-file-video', mov: 'fa-file-video', avi: 'fa-file-video', mkv: 'fa-file-video',
-                mp3: 'fa-file-audio', wav: 'fa-file-audio', flac: 'fa-file-audio',
-                doc: 'fa-file-word', docx: 'fa-file-word',
-                xls: 'fa-file-excel', xlsx: 'fa-file-excel',
-            };
-            return map[ext] || 'fa-file';
-        }
-
-        function addFile(name, size) {
-            const row = document.createElement('div');
-            row.className = 'rounded-xl p-3 flex items-center gap-3';
-            row.style.background = 'rgba(2, 6, 23, 0.5)';
-            row.style.border = '1px solid #1e293b';
-            row.innerHTML =
-                '<i class="fas ' + iconFor(name) + ' fa-file text-sky-300 text-xl w-6 text-center"></i>' +
-                '<div class="flex-1 min-w-0">' +
-                '<div class="flex items-center justify-between gap-2">' +
-                '<span class="text-sm text-slate-200 truncate">' + name + '</span>' +
-                '<span class="text-xs text-slate-400">' + fmtSize(size) + '</span>' +
-                '</div>' +
-                '<div class="mt-2 h-1.5 w-full rounded-full overflow-hidden" style="background:#111c33">' +
-                '<div class="file-progress h-full w-0 rounded-full" style="background:linear-gradient(90deg,#38bdf8,#a78bfa)"></div>' +
-                '</div>' +
-                '<span class="file-status text-xs mt-1 block" data-status="queued">Queued</span>' +
-                '</div>';
-            fileList.appendChild(row);
-            return row;
-        }
-
-        function uploadFile(div, duration) {
-            const bar = div.querySelector('.file-progress');
-            const status = div.querySelector('.file-status');
-            status.textContent = 'Uploading…';
-            status.className = 'file-status text-xs mt-1 block text-amber-300';
-            let start = null;
-            function step(ts) {
-                if (!start) start = ts;
-                const p = Math.min((ts - start) / duration, 1);
-                bar.style.width = (p * 100).toFixed(1) + '%';
-                if (p < 1) {
-                    requestAnimationFrame(step);
-                } else {
-                    status.textContent = 'Completed';
-                    status.className = 'file-status text-xs mt-1 block text-emerald-400';
-                }
-            }
-            requestAnimationFrame(step);
-        }
-
-        let queued = 0;
-        function startUpload() {
-            const rows = Array.from(fileList.children);
-            const remaining = rows.filter(r => r.querySelector('.file-status').dataset.status === 'queued');
-            if (remaining.length === 0) {
-                showToast('No pending files to upload.');
+        function copyText(text, onDone) {
+            var finish = function (ok) { if (typeof onDone === 'function') onDone(ok); };
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function () { finish(true); }, function () { finish(false); });
                 return;
             }
-            remaining.forEach((r, i) => {
-                setTimeout(() => uploadFile(r, 1800 + Math.random() * 2200), i * 250);
-            });
-            queued = remaining.length;
-            const short = Math.random().toString(36).slice(2, 10);
-            const shareLink = 'https://sync.451404.xyz/s/' + short;
-            setTimeout(() => showToast('Uploaded ' + remaining.length + ' file' + (remaining.length > 1 ? 's' : '') + '. Share link: ' + shareLink), Math.max(remaining.length * 250 + 2500, 2600));
+            try {
+                var area = document.createElement('textarea');
+                area.value = text;
+                area.setAttribute('readonly', '');
+                area.style.position = 'fixed';
+                area.style.opacity = '0';
+                document.body.appendChild(area);
+                area.select();
+                var ok = document.execCommand('copy');
+                document.body.removeChild(area);
+                finish(ok);
+            } catch (error) {
+                finish(false);
+            }
         }
 
-        ['dragover', 'dragenter'].forEach(ev => dropZone.addEventListener(ev, e => {
-            e.preventDefault();
-            dropZone.classList.add('border-sky-400', 'text-sky-300');
-            dropZone.style.borderColor = '#38bdf8';
-        }));
-        ['dragleave', 'dragend'].forEach(ev => dropZone.addEventListener(ev, e => {
-            e.preventDefault();
-            dropZone.classList.remove('border-sky-400', 'text-sky-300');
-            dropZone.style.borderColor = '';
-        }));
-        dropZone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropZone.classList.remove('border-sky-400', 'text-sky-300');
-            if (e.dataTransfer.files.length) {
-                fileList.innerHTML = '';
-                for (const f of e.dataTransfer.files) addFile(f.name, f.size);
-                showToast('Added ' + e.dataTransfer.files.length + ' file' + (e.dataTransfer.files.length > 1 ? 's' : '') + '.');
-            }
-        });
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length) {
-                fileList.innerHTML = '';
-                for (const f of fileInput.files) addFile(f.name, f.size);
-                showToast('Added ' + fileInput.files.length + ' file' + (fileInput.files.length > 1 ? 's' : '') + '.');
-            }
-        });
+        // Theme: persisted choice, system default, no flash before paint.
+        (function themeModule() {
+            var root = document.documentElement;
+            var toggle = byId('themeToggle');
+            var icon = byId('themeIcon');
+            if (!toggle || !icon) return;
+            var use = icon.querySelector('use');
 
-        const demoFiles = [
-            { name: 'Q2-financials.zip', size: 4.8 * 1024 * 1024 * 1024 },
-            { name: 'team-photo-2026.jpg', size: 6.4 * 1024 * 1024 },
-            { name: 'product-demo.mp4', size: 1.57 * 1024 * 1024 * 1024 },
-            { name: 'contract-v3.pdf', size: 512 * 1024 },
-            { name: 'backup-2026.tar', size: 9.2 * 1024 * 1024 * 1024 },
-        ];
-        demoBtn.addEventListener('click', () => {
-            fileList.innerHTML = '';
-            demoFiles.forEach((f, i) => setTimeout(() => addFile(f.name, f.size), i * 120));
-            setTimeout(startUpload, demoFiles.length * 120 + 200);
-        });
-        startBtn.addEventListener('click', () => {
-            const rows = Array.from(fileList.children);
-            const remaining = rows.filter(r => r.querySelector('.file-status').dataset.status === 'queued');
-            if (remaining.length === 0) {
-                showToast('Add files first, then start upload.');
-            } else {
-                startUpload();
+            function paint(theme) {
+                var light = theme === 'light';
+                root.setAttribute('data-theme', light ? 'light' : 'dark');
+                toggle.setAttribute('aria-pressed', light ? 'true' : 'false');
+                toggle.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+                if (use) use.setAttribute('href', light ? '#i-moon' : '#i-sun');
             }
-        });
+
+            paint(root.getAttribute('data-theme'));
+
+            toggle.addEventListener('click', function () {
+                var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                paint(next);
+                try { localStorage.setItem('451404-theme', next); } catch (error) { }
+                showToast(next === 'light' ? 'Light theme' : 'Dark theme');
+            });
+        })();
+
+        // Mobile navigation panel.
+        (function panelModule() {
+            var panel = byId('mobilePanel');
+            var openBtn = byId('menuBtn');
+            if (!panel || !openBtn) return;
+            var lastFocused = null;
+
+            function close() {
+                panel.hidden = true;
+                panel.classList.remove('is-open');
+                openBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+                if (lastFocused && lastFocused.focus) lastFocused.focus();
+            }
+
+            openBtn.addEventListener('click', function () {
+                lastFocused = document.activeElement;
+                panel.hidden = false;
+                panel.classList.add('is-open');
+                openBtn.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+                var first = panel.querySelector('a, button:not([data-panel-close])');
+                if (first) first.focus();
+            });
+
+            Array.prototype.forEach.call(panel.querySelectorAll('[data-panel-close]'), function (node) {
+                node.addEventListener('click', close);
+            });
+            Array.prototype.forEach.call(panel.querySelectorAll('a'), function (node) {
+                node.addEventListener('click', close);
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && !panel.hidden) close();
+            });
+        })();
+
+        // Product dropdown closes on outside click.
+        (function dropdownModule() {
+            var menus = document.querySelectorAll('details.menu');
+            if (!menus.length) return;
+            document.addEventListener('click', function (event) {
+                Array.prototype.forEach.call(menus, function (menu) {
+                    if (menu.open && !menu.contains(event.target)) menu.open = false;
+                });
+            });
+        })();
+
+        // Scroll reveal.
+        (function revealModule() {
+            var items = document.querySelectorAll('.reveal');
+            if (!items.length) return;
+            if (reduceMotion || !('IntersectionObserver' in window)) {
+                Array.prototype.forEach.call(items, function (el) { el.classList.add('is-in'); });
+                return;
+            }
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.14 });
+            Array.prototype.forEach.call(items, function (el) { observer.observe(el); });
+        })();
+
+        // Metric counters.
+        (function counterModule() {
+            var numbers = document.querySelectorAll('[data-count]');
+            if (!numbers.length) return;
+
+            function format(value, decimals, suffix) {
+                var text = decimals > 0 ? value.toFixed(decimals) : Math.round(value).toLocaleString('en-US');
+                return text + (suffix || '');
+            }
+
+            function run(el) {
+                var target = parseFloat(el.getAttribute('data-count')) || 0;
+                var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+                var suffix = el.getAttribute('data-suffix') || '';
+                if (reduceMotion) {
+                    el.textContent = format(target, decimals, suffix);
+                    return;
+                }
+                var start = 0;
+                var duration = 1400;
+                function frame(now) {
+                    if (!start) start = now;
+                    var progress = Math.min((now - start) / duration, 1);
+                    var eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = format(target * eased, decimals, suffix);
+                    if (progress < 1) window.requestAnimationFrame(frame);
+                }
+                window.requestAnimationFrame(frame);
+            }
+
+            if (!('IntersectionObserver' in window)) {
+                Array.prototype.forEach.call(numbers, run);
+                return;
+            }
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        run(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+            Array.prototype.forEach.call(numbers, function (el) { observer.observe(el); });
+        })();
+
+        // 90-day uptime strip, identical values everywhere it appears.
+        (function uptimeModule() {
+            var strips = document.querySelectorAll('.uptime');
+            if (!strips.length) return;
+            var days = 90;
+            var degraded = 46;
+            Array.prototype.forEach.call(strips, function (strip) {
+                if (strip.children.length) return;
+                var fragment = document.createDocumentFragment();
+                for (var i = 0; i < days; i += 1) {
+                    var bar = document.createElement('i');
+                    if (i === degraded) bar.className = 'is-warn';
+                    bar.title = (days - i) + ' days ago — ' + (i === degraded ? '99.2% · 11 min degraded' : '100%');
+                    fragment.appendChild(bar);
+                }
+                strip.appendChild(fragment);
+            });
+        })();
+
+        // Decorative QR-style matrix with proper finder patterns; deterministic per seed.
+        function paintQr(node, seed) {
+            if (!node || node.children.length) return;
+            var size = 21;
+            var origins = [[0, 0], [size - 7, 0], [0, size - 7]];
+            var hash = 2166136261;
+            for (var i = 0; i < seed.length; i += 1) {
+                hash ^= seed.charCodeAt(i);
+                hash = (hash * 16777619) >>> 0;
+            }
+
+            function finderState(x, y) {
+                for (var o = 0; o < origins.length; o += 1) {
+                    var dx = x - origins[o][0];
+                    var dy = y - origins[o][1];
+                    if (dx >= 0 && dx < 7 && dy >= 0 && dy < 7) {
+                        var ring = Math.min(dx, dy, 6 - dx, 6 - dy);
+                        return ring === 0 || ring >= 2;
+                    }
+                }
+                return null;
+            }
+
+            var fragment = document.createDocumentFragment();
+            for (var y = 0; y < size; y += 1) {
+                for (var x = 0; x < size; x += 1) {
+                    hash = (hash * 1664525 + 1013904223) >>> 0;
+                    var finder = finderState(x, y);
+                    var on = finder === null ? (hash & 1) === 1 : finder;
+                    var cell = document.createElement('span');
+                    if (on) cell.className = 'is-on';
+                    fragment.appendChild(cell);
+                }
+            }
+            node.appendChild(fragment);
+        }
+
+        paintQr(byId('qrHero'), 'sync.fileshare.xyz/s/k7m2pd');
+
+        // Transfer widget: selection, validation, simulated upload, share link.
+        (function transferModule() {
+            var dropZone = byId('dropZone');
+            var input = byId('fileInput');
+            var list = byId('fileList');
+            var uploadBtn = byId('uploadBtn');
+            var clearBtn = byId('clearBtn');
+            var note = byId('sendNote');
+            var result = byId('result');
+            var resultLink = byId('resultLink');
+            var resultMeta = byId('resultMeta');
+            var copyBtn = byId('copyBtn');
+            var expiry = byId('expiry');
+            var password = byId('transferPassword');
+            var notify = byId('notifyEmail');
+            if (!dropZone || !input || !list || !uploadBtn) return;
+
+            var files = [];
+            var busy = false;
+
+            function formatSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(0) + ' KB';
+                if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+                return (bytes / 1073741824).toFixed(2) + ' GB';
+            }
+
+            function totalBytes() {
+                return files.reduce(function (sum, file) { return sum + file.size; }, 0);
+            }
+
+            function updateNote() {
+                if (busy) return;
+                if (!files.length) {
+                    note.textContent = 'No files selected';
+                    uploadBtn.disabled = true;
+                    return;
+                }
+                note.textContent = files.length + (files.length === 1 ? ' file · ' : ' files · ') + formatSize(totalBytes());
+                uploadBtn.disabled = false;
+            }
+
+            function render() {
+                list.textContent = '';
+                files.forEach(function (file, index) {
+                    var row = document.createElement('div');
+                    row.className = 'trow';
+                    row.innerHTML =
+                        '<svg width="14" height="14" aria-hidden="true"><use href="#i-file"></use></svg>' +
+                        '<div>' +
+                        '<div class="trow__name"></div>' +
+                        '<div class="trow__bar"><i></i></div>' +
+                        '<div class="trow__meta"><span class="trow__status">Queued</span><span class="trow__detail"></span></div>' +
+                        '</div>' +
+                        '<button class="trow__x" type="button" aria-label="Remove file">' +
+                        '<svg width="13" height="13" aria-hidden="true"><use href="#i-x"></use></svg>' +
+                        '</button>';
+                    row.querySelector('.trow__name').textContent = file.name;
+                    row.querySelector('.trow__detail').textContent = formatSize(file.size);
+                    row.querySelector('.trow__x').addEventListener('click', function () {
+                        if (busy) return;
+                        files.splice(index, 1);
+                        if (result) result.hidden = true;
+                        render();
+                    });
+                    list.appendChild(row);
+                    file.node = row;
+                });
+                updateNote();
+            }
+
+            function addFiles(selected) {
+                var limit = 20 * 1024 * 1024 * 1024;
+                var added = 0;
+                Array.prototype.forEach.call(selected, function (file) {
+                    if (file.size > limit) {
+                        showToast(file.name + ' exceeds the 20 GB limit');
+                        return;
+                    }
+                    files.push({ name: file.name, size: file.size });
+                    added += 1;
+                });
+                if (added) {
+                    if (result) result.hidden = true;
+                    render();
+                }
+            }
+
+            ['dragenter', 'dragover'].forEach(function (name) {
+                dropZone.addEventListener(name, function (event) {
+                    event.preventDefault();
+                    dropZone.classList.add('is-over');
+                });
+            });
+            ['dragleave', 'drop'].forEach(function (name) {
+                dropZone.addEventListener(name, function (event) {
+                    event.preventDefault();
+                    dropZone.classList.remove('is-over');
+                });
+            });
+            dropZone.addEventListener('drop', function (event) {
+                if (event.dataTransfer && event.dataTransfer.files) addFiles(event.dataTransfer.files);
+            });
+            input.addEventListener('change', function () {
+                addFiles(input.files);
+                input.value = '';
+            });
+
+            function token(length) {
+                var alphabet = 'abcdefghijkmnpqrstuvwxyz23456789';
+                var out = '';
+                if (window.crypto && window.crypto.getRandomValues) {
+                    var values = new Uint32Array(length);
+                    window.crypto.getRandomValues(values);
+                    for (var i = 0; i < length; i += 1) out += alphabet[values[i] % alphabet.length];
+                    return out;
+                }
+                for (var j = 0; j < length; j += 1) out += alphabet[Math.floor(Math.random() * alphabet.length)];
+                return out;
+            }
+
+            function finish() {
+                busy = false;
+                var days = parseInt(expiry && expiry.value ? expiry.value : '30', 10);
+                var expiresAt = new Date(Date.now() + days * 86400000);
+                var link = 'https://sync.fileshare.xyz/s/' + token(6);
+                var meta = [files.length + (files.length === 1 ? ' file' : ' files'), formatSize(totalBytes())];
+                if (password && password.value.trim()) meta.push('password protected');
+                if (notify && notify.value.trim()) meta.push('receipt to ' + notify.value.trim());
+                meta.push('expires ' + expiresAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
+
+                if (resultLink) resultLink.value = link;
+                if (resultMeta) resultMeta.textContent = meta.join(' · ');
+                if (result) result.hidden = false;
+                updateNote();
+                showToast('Transfer ready · link is valid for ' + days + ' days');
+            }
+
+            function upload() {
+                if (busy || !files.length) return;
+                busy = true;
+                uploadBtn.disabled = true;
+                if (result) result.hidden = true;
+
+                var completed = 0;
+                var startedAt = performance.now();
+                var doneBytes = 0;
+
+                files.forEach(function (file) {
+                    var row = file.node;
+                    if (!row) return;
+                    var bar = row.querySelector('.trow__bar > i');
+                    var status = row.querySelector('.trow__status');
+                    var detail = row.querySelector('.trow__detail');
+                    var start = 0;
+                    var duration = reduceMotion ? 500 : 1400 + Math.random() * 1900;
+                    status.textContent = 'Encrypting';
+
+                    function step(now) {
+                        if (!start) start = now;
+                        var progress = Math.min((now - start) / duration, 1);
+                        var sent = file.size * progress;
+                        var elapsed = Math.max((now - startedAt) / 1000, 0.4);
+                        var speed = (doneBytes + sent) / elapsed;
+
+                        bar.style.width = (progress * 100).toFixed(1) + '%';
+                        if (progress < 1) {
+                            status.textContent = 'Uploading';
+                            detail.textContent = formatSize(sent) + ' of ' + formatSize(file.size) + ' · ' + formatSize(speed) + '/s';
+                            window.requestAnimationFrame(step);
+                            return;
+                        }
+
+                        status.textContent = 'Completed';
+                        status.className = 'trow__status is-done';
+                        detail.textContent = formatSize(file.size) + ' · checksum verified';
+                        doneBytes += file.size;
+                        completed += 1;
+                        if (completed === files.length) finish();
+                    }
+
+                    window.requestAnimationFrame(step);
+                });
+            }
+
+            uploadBtn.addEventListener('click', upload);
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    if (busy) return;
+                    files = [];
+                    if (result) result.hidden = true;
+                    render();
+                });
+            }
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function () {
+                    copyText(resultLink ? resultLink.value : '', function (ok) {
+                        showToast(ok ? 'Link copied to clipboard' : 'Copy failed — select the link manually');
+                    });
+                });
+            }
+
+            render();
+        })();
+
+        // Pricing: billing period and currency stay in sync across cards.
+        (function pricingModule() {
+            var cycles = document.querySelectorAll('[data-cycle]');
+            var currencies = document.querySelectorAll('[data-currency]');
+            if (!cycles.length || !currencies.length) return;
+
+            var table = {
+                starter: { monthly: { USD: 0, EUR: 0 }, annual: { USD: 0, EUR: 0 } },
+                business: { monthly: { USD: 12, EUR: 11 }, annual: { USD: 9, EUR: 8 } }
+            };
+            var state = { cycle: 'annual', currency: 'USD' };
+
+            function paint() {
+                var symbol = state.currency === 'EUR' ? '€' : '$';
+                var business = table.business[state.cycle][state.currency];
+
+                var starterPrice = document.querySelector('[data-plan-price="starter"]');
+                var businessPrice = document.querySelector('[data-plan-price="business"]');
+                if (starterPrice) starterPrice.textContent = symbol + table.starter[state.cycle][state.currency];
+                if (businessPrice) businessPrice.textContent = symbol + business;
+
+                var starterNote = document.querySelector('[data-plan-note="starter"]');
+                var businessNote = document.querySelector('[data-plan-note="business"]');
+                if (starterNote) starterNote.textContent = 'Free forever · up to 3 users';
+                if (businessNote) {
+                    businessNote.textContent = state.cycle === 'annual'
+                        ? 'Billed annually · ' + symbol + (business * 12) + ' per user'
+                        : 'Billed monthly · cancel anytime';
+                }
+
+                Array.prototype.forEach.call(cycles, function (button) {
+                    var on = button.getAttribute('data-cycle') === state.cycle;
+                    button.classList.toggle('is-on', on);
+                    button.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+                Array.prototype.forEach.call(currencies, function (button) {
+                    var on = button.getAttribute('data-currency') === state.currency;
+                    button.classList.toggle('is-on', on);
+                    button.setAttribute('aria-pressed', on ? 'true' : 'false');
+                });
+            }
+
+            Array.prototype.forEach.call(cycles, function (button) {
+                button.addEventListener('click', function () {
+                    state.cycle = button.getAttribute('data-cycle');
+                    paint();
+                });
+            });
+            Array.prototype.forEach.call(currencies, function (button) {
+                button.addEventListener('click', function () {
+                    state.currency = button.getAttribute('data-currency');
+                    paint();
+                });
+            });
+
+            paint();
+        })();
+
+        // Auth modal: validation, password reveal, focus trap, magic-link confirmation.
+        (function authModule() {
+            var modal = byId('authModal');
+            if (!modal) return;
+
+            var openers = document.querySelectorAll('[data-auth]');
+            var closeBtn = byId('authClose');
+            var form = byId('authForm');
+            var email = byId('authEmail');
+            var pass = byId('authPass');
+            var emailErr = byId('authEmailErr');
+            var passErr = byId('authPassErr');
+            var passToggle = byId('passToggle');
+            var title = byId('authTitle');
+            var subtitle = byId('authSub');
+            var orBlock = byId('authOr');
+            var ssoBlock = byId('authSso');
+            var signupNote = byId('authSignup');
+            var doneBlock = byId('authDone');
+            var sentTo = byId('authSentTo');
+            var againBtn = byId('authAgain');
+            var lastFocused = null;
+            var focusable = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+
+            function setError(field, node, message) {
+                if (node) {
+                    node.textContent = message || '';
+                    node.classList.toggle('is-on', Boolean(message));
+                }
+                if (!field) return;
+                if (message) field.setAttribute('aria-invalid', 'true');
+                else field.removeAttribute('aria-invalid');
+            }
+
+            function toggleHidden(nodes, hidden) {
+                Array.prototype.forEach.call(nodes, function (node) {
+                    if (node) node.hidden = hidden;
+                });
+            }
+
+            function showDone(address) {
+                toggleHidden([form, orBlock, ssoBlock, signupNote], true);
+                if (doneBlock) doneBlock.hidden = false;
+                if (sentTo) sentTo.textContent = address;
+                if (title) title.textContent = 'Check your e-mail';
+                if (subtitle) subtitle.textContent = 'No password needed — the link signs you in on this device.';
+                if (againBtn) againBtn.focus();
+            }
+
+            function resetStep() {
+                toggleHidden([form, orBlock, ssoBlock, signupNote, doneBlock], false);
+                if (doneBlock) doneBlock.hidden = true;
+                if (title) title.textContent = 'Sign in to 451404';
+                if (subtitle) subtitle.textContent = 'Use your workspace account. SSO and 2FA are handled by 451404 Access.';
+                setError(email, emailErr, '');
+                setError(pass, passErr, '');
+            }
+
+            function open() {
+                lastFocused = document.activeElement;
+                var panel = byId('mobilePanel');
+                var menuBtn = byId('menuBtn');
+                if (panel && !panel.hidden) {
+                    panel.hidden = true;
+                    panel.classList.remove('is-open');
+                    if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+                    document.body.style.overflow = '';
+                }
+                resetStep();
+                modal.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+                window.setTimeout(function () { if (email) email.focus(); }, 60);
+            }
+
+            function close() {
+                modal.classList.remove('is-open');
+                document.body.style.overflow = '';
+                if (lastFocused && lastFocused.focus) lastFocused.focus();
+            }
+
+            Array.prototype.forEach.call(openers, function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    open();
+                });
+            });
+
+            if (closeBtn) closeBtn.addEventListener('click', close);
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    close();
+                    return;
+                }
+                // In-page anchors (e.g. "Create a workspace") close the dialog first.
+                var anchor = event.target.closest ? event.target.closest('a[href^="#"]') : null;
+                if (anchor) close();
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (!modal.classList.contains('is-open')) return;
+                if (event.key === 'Escape') {
+                    close();
+                    return;
+                }
+                if (event.key !== 'Tab') return;
+                var nodes = modal.querySelectorAll(focusable);
+                if (!nodes.length) return;
+                var first = nodes[0];
+                var last = nodes[nodes.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            });
+
+            if (passToggle) {
+                passToggle.addEventListener('click', function () {
+                    var showing = pass.getAttribute('type') === 'text';
+                    pass.setAttribute('type', showing ? 'password' : 'text');
+                    passToggle.textContent = showing ? 'Show' : 'Hide';
+                    passToggle.setAttribute('aria-pressed', showing ? 'false' : 'true');
+                });
+            }
+
+            if (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    var valid = true;
+                    var value = (email.value || '').trim();
+
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
+                        setError(email, emailErr, 'Enter your work e-mail address.');
+                        valid = false;
+                    } else {
+                        setError(email, emailErr, '');
+                    }
+
+                    if (!pass.value || pass.value.length < 8) {
+                        setError(pass, passErr, 'Password must be at least 8 characters.');
+                        valid = false;
+                    } else {
+                        setError(pass, passErr, '');
+                    }
+
+                    if (!valid) {
+                        (email.getAttribute('aria-invalid') === 'true' ? email : pass).focus();
+                        return;
+                    }
+
+                    showDone(value);
+                });
+            }
+
+            Array.prototype.forEach.call(modal.querySelectorAll('[data-auth-sso]'), function (button) {
+                button.addEventListener('click', function () {
+                    var value = (email.value || '').trim();
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
+                        setError(email, emailErr, 'Enter your work e-mail to continue with ' + button.getAttribute('data-auth-sso') + '.');
+                        email.focus();
+                        return;
+                    }
+                    setError(email, emailErr, '');
+                    showDone(value);
+                });
+            });
+
+            if (againBtn) {
+                againBtn.addEventListener('click', function () {
+                    resetStep();
+                    if (email) email.focus();
+                });
+            }
+        })();
+
+        // Trial signup form.
+        (function signupModule() {
+            var form = byId('signupForm');
+            if (!form) return;
+            var email = byId('ctaEmail');
+            var consent = byId('ctaConsent');
+            var error = byId('ctaErr');
+            var success = byId('ctaOk');
+            var sentTo = byId('ctaSentTo');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var value = (email.value || '').trim();
+                var message = '';
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) message = 'Enter a valid work e-mail address.';
+                else if (consent && !consent.checked) message = 'Please accept the Terms and Privacy Policy.';
+
+                error.textContent = message;
+                error.classList.toggle('is-on', Boolean(message));
+
+                if (message) {
+                    email.setAttribute('aria-invalid', 'true');
+                    email.focus();
+                    return;
+                }
+
+                email.removeAttribute('aria-invalid');
+                if (sentTo) sentTo.textContent = value;
+                if (success) success.hidden = false;
+                form.hidden = true;
+            });
+        })();
+
+        // Cookie consent, stored locally.
+        (function cookieModule() {
+            var banner = byId('cookieBanner');
+            if (!banner) return;
+            var stored = null;
+            try { stored = localStorage.getItem('451404-consent'); } catch (error) { }
+            if (!stored) banner.classList.add('is-open');
+
+            Array.prototype.forEach.call(banner.querySelectorAll('[data-cookie]'), function (button) {
+                button.addEventListener('click', function () {
+                    var choice = button.getAttribute('data-cookie');
+                    try { localStorage.setItem('451404-consent', choice); } catch (error) { }
+                    banner.classList.remove('is-open');
+                    showToast(choice === 'all' ? 'Analytics cookies enabled' : 'Only essential cookies');
+                });
+            });
+        })();
+
+        // Copyright year and copy-to-clipboard buttons.
+        (function miscModule() {
+            var year = byId('curYear');
+            if (year) year.textContent = new Date().getFullYear();
+
+            Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function (button) {
+                button.addEventListener('click', function () {
+                    var source = byId(button.getAttribute('data-copy'));
+                    if (!source) return;
+                    copyText(source.textContent.trim(), function (ok) {
+                        showToast(ok ? 'Snippet copied' : 'Copy failed');
+                    });
+                });
+            });
+        })();
+
     </script>
 </body>
 </html>
